@@ -2,6 +2,12 @@ extends SceneTree
 
 const TEST_SCRIPTS := [
 	"res://tests/test_input_map.gd",
+	"res://tests/test_player_movement.gd",
+	"res://tests/test_player_jump.gd",
+	"res://tests/test_player_animations.gd",
+	"res://tests/test_player_attack.gd",
+	"res://tests/test_player_bow.gd",
+	"res://tests/test_town_scene.gd",
 ]
 
 func _initialize() -> void:
