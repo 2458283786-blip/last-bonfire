@@ -18,20 +18,33 @@ var is_attacking := false
 var attack_timer := 0.0
 var attack_cooldown_timer := 0.0
 var bow_cooldown_timer := 0.0
+var _prev_jump_pressed := false
+var _prev_attack_pressed := false
+var _prev_bow_pressed := false
 
 @onready var sprite: AnimatedSprite2D = $Sprite
 @onready var attack_hitbox: Area2D = $AttackHitbox
 @onready var bow_spawn: Marker2D = $BowSpawn
 
 func _physics_process(delta: float) -> void:
+	if not is_on_floor():
+		velocity.y += gravity * delta
 	var dir := Input.get_axis("move_left", "move_right")
 	if dir != 0:
 		facing = 1 if dir > 0 else -1
 	velocity.x = dir * move_speed
-	if Input.is_action_just_pressed("attack"):
+	var jump_pressed := Input.is_action_pressed("jump")
+	if jump_pressed and not _prev_jump_pressed and is_on_floor():
+		velocity.y = jump_velocity
+	_prev_jump_pressed = jump_pressed
+	var attack_pressed := Input.is_action_pressed("attack")
+	if attack_pressed and not _prev_attack_pressed:
 		try_attack()
-	if Input.is_action_just_pressed("bow"):
+	_prev_attack_pressed = attack_pressed
+	var bow_pressed := Input.is_action_pressed("bow")
+	if bow_pressed and not _prev_bow_pressed:
 		try_shoot_bow()
+	_prev_bow_pressed = bow_pressed
 	_tick_timers(delta)
 	move_and_slide()
 	_update_visual()

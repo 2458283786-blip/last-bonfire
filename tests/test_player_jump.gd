@@ -10,34 +10,25 @@ func _initialize() -> void:
 func _run() -> void:
 	await process_frame
 	var p := await _spawn_player()
-	press("move_right")
+	check(p.is_on_floor(), "落地后 is_on_floor 应为 true")
+	press("jump")
 	await process_frame
 	await physics_frame
-	check(p.velocity.x > 0, "按住 move_right 应产生正 x 速度")
-	var x0 := p.global_position.x
+	check(p.velocity.y < 0, "跳跃后 y 速度应为负")
+	var vy_after_jump := p.velocity.y
 	await physics_frame
-	await physics_frame
-	check(p.global_position.x > x0, "持续 move_right 位置应右移")
-	release("move_right")
-	await process_frame
-	await physics_frame
-	check(p.velocity.x == 0, "松开 move_right 后 x 速度应为 0")
-	check(p.facing == 1, "朝右时 facing 应为 1")
-	press("move_left")
-	await process_frame
-	await physics_frame
-	check(p.velocity.x < 0, "按住 move_left 应产生负 x 速度")
-	check(p.facing == -1, "朝左时 facing 应为 -1")
+	check(p.velocity.y > vy_after_jump, "上升过程中重力应使 y 速度增大（绝对值减小）")
+	check(not p.is_on_floor(), "跳跃后应离地")
 	_finish()
 
 func _spawn_player() -> Player:
 	var scene := load(PLAYER_SCENE) as PackedScene
 	var p := scene.instantiate() as Player
 	root.add_child(p)
-	p.global_position = Vector2(400, 300)
-	_add_floor(Vector2(400, 420))
-	await physics_frame
-	await physics_frame
+	p.global_position = Vector2(400, 375)
+	_add_floor(Vector2(400, 400))
+	for i in 8:
+		await physics_frame
 	return p
 
 func _add_floor(pos: Vector2) -> void:
@@ -58,15 +49,12 @@ func check(cond: bool, msg: String) -> void:
 func press(action: String) -> void:
 	Input.action_press(action)
 
-func release(action: String) -> void:
-	Input.action_release(action)
-
 func _finish() -> void:
 	if failures.is_empty():
-		print("[PASS] test_player_movement: %d 断言全部通过" % assertions)
+		print("[PASS] test_player_jump: %d 断言全部通过" % assertions)
 		quit(0)
 	else:
 		for f in failures:
 			push_error("[FAIL] " + f)
-		print("[FAIL] test_player_movement: %d 个断言失败" % failures.size())
+		print("[FAIL] test_player_jump: %d 个断言失败" % failures.size())
 		quit(1)
