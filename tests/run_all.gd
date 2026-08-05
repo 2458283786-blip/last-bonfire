@@ -8,6 +8,7 @@ const TEST_SCRIPTS := [
 	"res://tests/test_player_attack.gd",
 	"res://tests/test_player_bow.gd",
 	"res://tests/test_town_scene.gd",
+	"res://tests/test_dungeon_template.gd",
 ]
 
 func _initialize() -> void:

@@ -26,6 +26,17 @@ position = Vector2(960, 900)
 [node name="CollisionShape2D" type="CollisionShape2D" parent="GroundBody"]
 shape = SubResource("Rect_ground")
 
+[node name="DungeonEntrance" type="Marker2D" parent="."]
+position = Vector2(1500, 830)
+
+[node name="DungeonEntranceLabel" type="Label" parent="."]
+offset_left = 1370.0
+offset_top = 700.0
+offset_right = 1630.0
+offset_bottom = 740.0
+theme_override_font_sizes/font_size = 20
+text = "地下通道入口（预留）"
+
 [node name="Player" parent="." instance=ExtResource("2_player")]
 position = Vector2(400, 850)
 
