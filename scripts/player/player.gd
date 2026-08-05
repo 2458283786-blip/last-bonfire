@@ -63,8 +63,12 @@ func _tick_timers(delta: float) -> void:
 			attack_hitbox.monitoring = false
 
 func try_attack() -> void:
-	# Task 5 实现：进入攻击状态并启用命中框
-	pass
+	if attack_cooldown_timer > 0.0 or is_attacking:
+		return
+	is_attacking = true
+	attack_timer = attack_duration
+	attack_cooldown_timer = attack_cooldown
+	attack_hitbox.monitoring = true
 
 func try_shoot_bow() -> void:
 	# Task 6 实现：生成箭矢
