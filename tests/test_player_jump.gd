@@ -5,7 +5,12 @@ var assertions := 0
 const PLAYER_SCENE := "res://scenes/player/player.tscn"
 
 func _initialize() -> void:
+	create_timer(20.0).timeout.connect(_on_timeout)
 	_run()
+
+func _on_timeout() -> void:
+	push_error("[FAIL] 测试超时未退出")
+	quit(1)
 
 func _run() -> void:
 	await process_frame

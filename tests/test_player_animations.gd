@@ -15,34 +15,27 @@ func _on_timeout() -> void:
 func _run() -> void:
 	await process_frame
 	var p := await _spawn_player()
+	var frames := p.sprite.sprite_frames
+	check(frames != null, "玩家应已构建 SpriteFrames")
+	if frames != null:
+		for anim in ["idle", "run", "jump", "attack"]:
+			check(frames.has_animation(anim), "应有 " + anim + " 动画")
+	check(p.sprite.animation == "idle", "静止时应播放 idle")
 	press("move_right")
 	await process_frame
 	await physics_frame
-	check(p.velocity.x > 0, "按住 move_right 应产生正 x 速度")
-	var x0 := p.global_position.x
 	await physics_frame
-	await physics_frame
-	check(p.global_position.x > x0, "持续 move_right 位置应右移")
-	release("move_right")
-	await process_frame
-	await physics_frame
-	check(p.velocity.x == 0, "松开 move_right 后 x 速度应为 0")
-	check(p.facing == 1, "朝右时 facing 应为 1")
-	press("move_left")
-	await process_frame
-	await physics_frame
-	check(p.velocity.x < 0, "按住 move_left 应产生负 x 速度")
-	check(p.facing == -1, "朝左时 facing 应为 -1")
+	check(p.sprite.animation == "run", "移动时应播放 run")
 	_finish()
 
 func _spawn_player() -> Player:
 	var scene := load(PLAYER_SCENE) as PackedScene
 	var p := scene.instantiate() as Player
 	root.add_child(p)
-	p.global_position = Vector2(400, 300)
-	_add_floor(Vector2(400, 420))
-	await physics_frame
-	await physics_frame
+	p.global_position = Vector2(400, 375)
+	_add_floor(Vector2(400, 400))
+	for i in 8:
+		await physics_frame
 	return p
 
 func _add_floor(pos: Vector2) -> void:
@@ -55,23 +48,20 @@ func _add_floor(pos: Vector2) -> void:
 	floor.position = pos
 	root.add_child(floor)
 
+func press(action: String) -> void:
+	Input.action_press(action)
+
 func check(cond: bool, msg: String) -> void:
 	assertions += 1
 	if not cond:
 		failures.append(msg)
 
-func press(action: String) -> void:
-	Input.action_press(action)
-
-func release(action: String) -> void:
-	Input.action_release(action)
-
 func _finish() -> void:
 	if failures.is_empty():
-		print("[PASS] test_player_movement: %d 断言全部通过" % assertions)
+		print("[PASS] test_player_animations: %d 断言全部通过" % assertions)
 		quit(0)
 	else:
 		for f in failures:
 			push_error("[FAIL] " + f)
-		print("[FAIL] test_player_movement: %d 个断言失败" % failures.size())
+		print("[FAIL] test_player_animations: %d 个断言失败" % failures.size())
 		quit(1)

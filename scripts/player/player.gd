@@ -26,6 +26,10 @@ var _prev_bow_pressed := false
 @onready var attack_hitbox: Area2D = $AttackHitbox
 @onready var bow_spawn: Marker2D = $BowSpawn
 
+func _ready() -> void:
+	sprite.sprite_frames = PlayerAnimations.build_sprite_frames()
+	sprite.play("idle")
+
 func _physics_process(delta: float) -> void:
 	if not is_on_floor():
 		velocity.y += gravity * delta
@@ -70,3 +74,11 @@ func _update_visual() -> void:
 	sprite.flip_h = facing < 0
 	attack_hitbox.position.x = absf(attack_hitbox.position.x) * facing
 	bow_spawn.position.x = absf(bow_spawn.position.x) * facing
+	if is_attacking:
+		sprite.play("attack")
+	elif not is_on_floor():
+		sprite.play("jump")
+	elif absf(velocity.x) > 10.0:
+		sprite.play("run")
+	else:
+		sprite.play("idle")

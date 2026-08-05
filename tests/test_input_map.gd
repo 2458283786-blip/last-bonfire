@@ -5,7 +5,12 @@ var assertions := 0
 const REQUIRED_ACTIONS := ["move_left", "move_right", "jump", "attack", "bow", "interact"]
 
 func _initialize() -> void:
+	create_timer(20.0).timeout.connect(_on_timeout)
 	_run()
+
+func _on_timeout() -> void:
+	push_error("[FAIL] 测试超时未退出")
+	quit(1)
 
 func _run() -> void:
 	await process_frame
