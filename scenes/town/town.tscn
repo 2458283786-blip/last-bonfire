@@ -1,0 +1,29 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/town/town.gd" id="1_town"]
+
+[node name="Town" type="Node2D"]
+script = ExtResource("1_town")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(960, 540)
+
+[node name="Background" type="ColorRect" parent="."]
+offset_right = 1920.0
+offset_bottom = 1080.0
+color = Color(0.16, 0.19, 0.25, 1)
+
+[node name="Ground" type="ColorRect" parent="."]
+offset_top = 860.0
+offset_right = 1920.0
+offset_bottom = 1080.0
+color = Color(0.28, 0.38, 0.22, 1)
+
+[node name="SceneLabel" type="Label" parent="."]
+offset_left = 560.0
+offset_top = 60.0
+offset_right = 1360.0
+offset_bottom = 140.0
+theme_override_font_sizes/font_size = 36
+text = "城镇场景（占位）"
+horizontal_alignment = 1
