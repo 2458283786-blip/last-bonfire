@@ -1,6 +1,7 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scripts/player/player.gd" id="1_player"]
+[ext_resource type="PackedScene" path="res://scenes/player/arrow.tscn" id="2_arrow"]
 
 [sub_resource type="CapsuleShape2D" id="Capsule_body"]
 radius = 10.0
@@ -11,6 +12,7 @@ size = Vector2(28, 20)
 
 [node name="Player" type="CharacterBody2D"]
 script = ExtResource("1_player")
+arrow_scene = ExtResource("2_arrow")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, -4)

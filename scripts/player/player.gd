@@ -71,8 +71,14 @@ func try_attack() -> void:
 	attack_hitbox.monitoring = true
 
 func try_shoot_bow() -> void:
-	# Task 6 实现：生成箭矢
-	pass
+	if bow_cooldown_timer > 0.0:
+		return
+	bow_cooldown_timer = bow_cooldown
+	var arrow: Arrow = arrow_scene.instantiate()
+	arrow.add_to_group("arrows")
+	get_parent().add_child(arrow)
+	arrow.global_position = bow_spawn.global_position
+	arrow.setup(Vector2(facing, 0), arrow_speed)
 
 func _update_visual() -> void:
 	sprite.flip_h = facing < 0
