@@ -94,6 +94,7 @@
 - `ResourceNode`（Area2D）：预留机制防两人砍同一棵树；耗尽后生成 Pickup 并按 `respawn_days` 重生。
 - `Pickup`（Area2D）：地上的掉落物，居民捡起后计入背包并运回仓库。
 - `Villager`：工作状态机 IDLE → FIND_TREE → CHOPPING → PICKUP → DEPOSIT；搬运目标优先仓库，其次临时堆点。
+- `Villager` 无职业居民：在家附近随机漫游（漫游半径/休息时长可在 Inspector 配置），伐木屋有空位时自动转职。
 - 建筑：`StorageBuilding`（扩容）、`WoodcutterHut`（转职伐木工，名额 2）、`LumberCamp`（生成 6 棵城内树）。
 - `WildTreeSpawner`：在配置区域内按 `max_trees` 限量随机生成野生树，每天检查补足。
 

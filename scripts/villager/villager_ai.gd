@@ -3,7 +3,7 @@ extends CharacterBody2D
 ## 居民 AI：工作状态机（当前支持伐木工：砍树→捡掉落物→运回仓库→入库）。
 ## 移动为直线走向目标，后续复杂地图再接 NavigationAgent2D。
 
-enum WorkState { IDLE, FIND_TREE, TRAVEL_TO_TREE, CHOPPING, PICKUP, TRAVEL_TO_STORAGE, DEPOSIT }
+enum WorkState { IDLE, FIND_TREE, TRAVEL_TO_TREE, CHOPPING, PICKUP, TRAVEL_TO_STORAGE, DEPOSIT, WANDER }
 
 ## 行走速度（像素/秒）
 @export var move_speed: float = 180.0
@@ -13,6 +13,12 @@ enum WorkState { IDLE, FIND_TREE, TRAVEL_TO_TREE, CHOPPING, PICKUP, TRAVEL_TO_ST
 @export var chop_interval: float = 1.0
 ## 一次最多背多少份资源
 @export var carry_capacity: int = 3
+## 无职业居民在出生点附近的漫游半径
+@export var wander_radius: float = 150.0
+## 无职业居民每次停下休息的最短秒数
+@export var wander_wait_min: float = 1.5
+## 无职业居民每次停下休息的最长秒数
+@export var wander_wait_max: float = 4.0
 
 var villager_id := 0
 var job := "idle"
@@ -22,10 +28,18 @@ var target_tree: ResourceNode = null
 var target_pickup: Pickup = null
 var target_storage: Node2D = null
 var chop_timer := 0.0
+var home_position := Vector2.ZERO
+var wander_target := Vector2.ZERO
+var wander_timer := 0.0
+var wander_wait := 0.0
+var _last_position := Vector2.ZERO
+var _stuck_frames := 0
 
 func _ready() -> void:
 	villager_id = get_instance_id()
 	add_to_group("villagers")
+	home_position = global_position
+	_last_position = global_position
 
 func set_job(new_job: String) -> void:
 	job = new_job
@@ -52,18 +66,56 @@ func _physics_process(delta: float) -> void:
 			_travel_to_storage(delta)
 		WorkState.DEPOSIT:
 			_deposit()
+		WorkState.WANDER:
+			_wander(delta)
 	move_and_slide()
 
 func _update_idle() -> void:
 	if job == "woodcutter":
 		state = WorkState.FIND_TREE
 	elif job == "idle":
-		_try_auto_convert()
+		if _try_auto_convert():
+			return
+		wander_timer = 0.0
+		wander_wait = randf_range(wander_wait_min, wander_wait_max)
+		state = WorkState.WANDER
 
-func _try_auto_convert() -> void:
+func _try_auto_convert() -> bool:
 	var hut := _nearest_in_group("job_huts")
 	if hut != null and hut.has_method("can_accept_villager") and hut.can_accept_villager(self):
 		hut.assign_villager(self)
+		return true
+	return false
+
+## 无职业居民漫游：走 → 停下休息 → 再走，保持在家附近；
+## 伐木屋一旦有空位立即转职；被墙挡住时换一个目标。
+func _wander(delta: float) -> void:
+	if _try_auto_convert():
+		return
+	if wander_target == Vector2.ZERO:
+		wander_timer += delta
+		velocity.x = 0.0
+		if wander_timer >= wander_wait:
+			_pick_wander_target()
+		return
+	if _move_toward(wander_target, delta):
+		wander_target = Vector2.ZERO
+		wander_timer = 0.0
+		return
+	if global_position.distance_to(_last_position) < 1.0:
+		_stuck_frames += 1
+	else:
+		_stuck_frames = 0
+	_last_position = global_position
+	if _stuck_frames >= 30:
+		_stuck_frames = 0
+		_pick_wander_target()
+
+func _pick_wander_target() -> void:
+	var angle := randf() * TAU
+	var radius := randf_range(20.0, wander_radius)
+	wander_target = home_position + Vector2.from_angle(angle) * radius
+	wander_timer = 0.0
 
 func _find_tree() -> void:
 	target_tree = _nearest_available_tree()
