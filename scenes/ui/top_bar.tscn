@@ -1,0 +1,53 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/top_bar.gd" id="1_top"]
+
+[node name="TopBar" type="PanelContainer"]
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 8.0
+offset_bottom = 58.0
+grow_horizontal = 2
+script = ExtResource("1_top")
+
+[node name="HBox" type="HBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="HealthBar" type="ProgressBar" parent="HBox"]
+custom_minimum_size = Vector2(180, 0)
+max_value = 100.0
+show_percentage = false
+
+[node name="DayLabel" type="Label" parent="HBox"]
+text = "第 1 天"
+
+[node name="PhaseLabel" type="Label" parent="HBox"]
+text = "白天"
+
+[node name="PhaseTimeLabel" type="Label" parent="HBox"]
+text = "剩余 60s"
+
+[node name="WoodLabel" type="Label" parent="HBox"]
+text = "木头 10"
+
+[node name="StoneLabel" type="Label" parent="HBox"]
+text = "石头 5"
+
+[node name="GoldLabel" type="Label" parent="HBox"]
+text = "金币 0"
+
+[node name="MaterialLabel" type="Label" parent="HBox"]
+text = "材料 0"
+
+[node name="CapacityLabel" type="Label" parent="HBox"]
+text = "库存 15/20"
+
+[node name="VillagersButton" type="Button" parent="HBox"]
+text = "居民"
+
+[node name="BuildButton" type="Button" parent="HBox"]
+text = "建造"
+
+[node name="BackpackButton" type="Button" parent="HBox"]
+text = "背包"

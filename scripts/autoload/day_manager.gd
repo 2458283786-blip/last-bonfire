@@ -43,3 +43,6 @@ func _unhandled_input(event: InputEvent) -> void:
 		elif event.keycode == KEY_F10:
 			advance_phase()
 			print("[DayManager] 阶段推进到 %s" % TimePhase.keys()[phase])
+
+func phase_remaining() -> float:
+	return maxf(phase_length_seconds - _phase_timer, 0.0)

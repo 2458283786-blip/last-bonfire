@@ -1,14 +1,14 @@
 extends CanvasLayer
-## 玩家 HUD：血条显示。后续在此扩展资源/天数/建筑菜单等 UI。
+## HUD 总控：键盘入口与面板开合（后续任务在此扩展）。
 
-@onready var health_bar: ProgressBar = $HealthBar
+@onready var top_bar: PanelContainer = $TopBar
 
-func _process(_delta: float) -> void:
-	var players := get_tree().get_nodes_in_group("players")
-	if players.is_empty():
-		return
-	var player := players[0] as Player
-	if player == null:
-		return
-	health_bar.max_value = player.max_hp
-	health_bar.value = player.hp
+func _ready() -> void:
+	top_bar.open_build_menu.connect(_toggle_build_menu)
+	top_bar.open_villager_panel.connect(_toggle_villager_panel)
+
+func _toggle_build_menu() -> void:
+	pass  # Task 5 实现
+
+func _toggle_villager_panel() -> void:
+	pass  # Task 8 实现

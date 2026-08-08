@@ -1,14 +1,10 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/hud.gd" id="1_hud"]
+[ext_resource type="PackedScene" path="res://scenes/ui/top_bar.tscn" id="2_top"]
 
 [node name="HUD" type="CanvasLayer"]
+process_mode = 3
 script = ExtResource("1_hud")
 
-[node name="HealthBar" type="ProgressBar" parent="."]
-offset_left = 20.0
-offset_top = 20.0
-offset_right = 320.0
-offset_bottom = 50.0
-max_value = 100.0
-show_percentage = false
+[node name="TopBar" parent="." instance=ExtResource("2_top")]
