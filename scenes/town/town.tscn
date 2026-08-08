@@ -11,6 +11,7 @@
 [ext_resource type="PackedScene" uid="uid://balcd3tikf5n" path="res://scenes/resources/wild_tree_spawner.tscn" id="9_jil70"]
 [ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="10_hud"]
 [ext_resource type="PackedScene" path="res://scenes/buildings/bonfire.tscn" id="11_bonfire"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/night_wave_spawner.tscn" id="12_nightwave"]
 
 [sub_resource type="RectangleShape2D" id="Rect_ground"]
 size = Vector2(1920, 40)
@@ -498,6 +499,9 @@ horizontal_alignment = 1
 
 [node name="Bonfire" parent="." instance=ExtResource("11_bonfire")]
 position = Vector2(200, 830)
+
+[node name="NightWaveSpawner" parent="." instance=ExtResource("12_nightwave")]
+position = Vector2(960, 850)
 
 [node name="Player" parent="." unique_id=948302446 instance=ExtResource("2_player")]
 position = Vector2(400, 850)
