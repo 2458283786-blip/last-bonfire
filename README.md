@@ -28,7 +28,7 @@
 ## 运行测试
 
 ```bash
-godot --headless --path . --script res://tests/run_all.gd
+godot --headless --path . res://tests/run_all.tscn
 ```
 
 ## 目录结构
@@ -60,10 +60,15 @@ godot --headless --path . --script res://tests/run_all.gd
 - [x] 启动场景 → 城镇场景切换链路
 - [x] 玩家移动、跳跃、近战攻击与弓箭射击
 - [x] 玩家动画状态机（idle / run / jump / attack）
-- [x] 自动化测试（tests/，7 个测试脚本）
+- [x] 自动化测试（tests/，14 个测试脚本）
+- [x] 天数系统（DayManager，F7 调试推进一天）
+- [x] 库存与经济（EconomyManager：开局库存、容量、出入库）
+- [x] 资源节点（树/石头：无碰撞、按天重生、数据驱动配置）
+- [x] 居民自动采集（伐木工：砍树 → 捡掉落物 → 运回仓库 → 入库）
+- [x] 建筑（仓库扩容 / 伐木屋转职 / 伐木场城内树）
+- [x] 野外树随机限量生成（按天补足）
 - [ ] 敌人与伤害结算
-- [ ] 建筑放置与升级
-- [ ] 居民职业自动分配与采集 AI
+- [ ] 玩家建造操作（选建筑 → 扣库存 → 放置）
 - [ ] 昼夜循环与夜晚怪物袭击
 - [ ] 地下通道与探索关卡
 
