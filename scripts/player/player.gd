@@ -35,6 +35,7 @@ var _prev_bow_pressed := false
 @onready var bow_spawn: Marker2D = $BowSpawn
 
 func _ready() -> void:
+	add_to_group("players")
 	sprite.sprite_frames = PlayerAnimations.build_sprite_frames()
 	sprite.play("idle")
 

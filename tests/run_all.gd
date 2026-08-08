@@ -28,6 +28,8 @@ const TEST_SCRIPTS := [
 	"res://tests/test_villager_carry_capacity.gd",
 	"res://tests/test_villager_stuck_wall.gd",
 	"res://tests/test_woodcutter_hut_release.gd",
+	"res://tests/test_enemy.gd",
+	"res://tests/test_enemy_ai.gd",
 ]
 const INPUT_ACTIONS := ["move_left", "move_right", "jump", "attack", "bow"]
 
