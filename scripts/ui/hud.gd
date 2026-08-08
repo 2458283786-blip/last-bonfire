@@ -8,6 +8,8 @@ extends CanvasLayer
 @onready var interact_hint: Label = $InteractHint
 @onready var night_overlay: Control = $NightOverlay
 @onready var villager_panel: PanelContainer = $VillagerPanel
+@onready var pause_menu: PanelContainer = $PauseMenu
+@onready var backpack_panel: PanelContainer = $BackpackPanel
 
 var _selector: BuildingSelector = null
 
@@ -17,6 +19,11 @@ func _ready() -> void:
 	build_menu.building_selected.connect(_on_building_selected)
 	building_panel.close_requested.connect(func() -> void: building_panel.visible = false)
 	villager_panel.close_requested.connect(func() -> void: villager_panel.visible = false)
+	pause_menu.resume_requested.connect(_toggle_pause)
+	pause_menu.settings_requested.connect(func() -> void: toast_queue.push("设置功能开发中"))
+	pause_menu.save_requested.connect(func() -> void: toast_queue.push("存档功能预留中"))
+	pause_menu.exit_requested.connect(func() -> void: GameManager.change_scene("res://scenes/main/boot.tscn"))
+	top_bar.open_backpack.connect(_toggle_backpack)
 	_selector = BuildingSelector.new()
 	get_tree().current_scene.add_child(_selector)
 	_selector.building_selected.connect(_on_building_clicked)
@@ -34,6 +41,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		_toggle_build_menu()
 	elif event.is_action_pressed("villager_panel"):
 		_toggle_villager_panel()
+	elif event.is_action_pressed("backpack"):
+		_toggle_backpack()
+	elif event.is_action_pressed("pause"):
+		_toggle_pause()
 	elif event.is_action_pressed("interact"):
 		_try_interact()
 
@@ -45,6 +56,20 @@ func _toggle_villager_panel() -> void:
 		villager_panel.visible = false
 	else:
 		villager_panel.open_panel()
+
+func _toggle_pause() -> void:
+	if GameManager.is_paused:
+		GameManager.resume_game()
+		pause_menu.visible = false
+	else:
+		GameManager.pause_game()
+		pause_menu.visible = true
+
+func _toggle_backpack() -> void:
+	if backpack_panel.visible:
+		backpack_panel.visible = false
+	else:
+		backpack_panel.open_panel()
 
 func _on_building_selected(data: BuildingData) -> void:
 	build_menu.visible = false

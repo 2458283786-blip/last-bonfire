@@ -1,0 +1,31 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/backpack_panel.gd" id="1_pack"]
+
+[node name="BackpackPanel" type="PanelContainer"]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -220.0
+offset_top = -140.0
+offset_right = 220.0
+offset_bottom = 140.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_pack")
+
+[node name="VBox" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Title" type="Label" parent="VBox"]
+text = "背包（装备系统随地下城开放）"
+
+[node name="GoldLabel" type="Label" parent="VBox"]
+text = "金币 0"
+
+[node name="MaterialLabel" type="Label" parent="VBox"]
+text = "怪物材料 0"
