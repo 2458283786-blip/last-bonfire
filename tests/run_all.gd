@@ -38,6 +38,8 @@ const TEST_SCRIPTS := [
 	"res://tests/test_building_data.gd",
 	"res://tests/test_town_registry.gd",
 	"res://tests/test_top_bar.gd",
+	"res://tests/test_build_menu.gd",
+	"res://tests/test_placement.gd",
 ]
 const INPUT_ACTIONS := ["move_left", "move_right", "jump", "attack", "bow"]
 

@@ -53,6 +53,10 @@ func _ready() -> void:
 	sprite.play("idle")
 
 func _physics_process(delta: float) -> void:
+	if GameManager.is_placing:
+		velocity.x = 0.0
+		move_and_slide()
+		return
 	if not is_on_floor():
 		velocity.y += gravity * delta
 	var dir := Input.get_axis("move_left", "move_right")
