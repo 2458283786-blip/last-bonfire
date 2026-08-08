@@ -25,15 +25,20 @@ func _ready() -> void:
 	pause_menu.save_requested.connect(func() -> void: toast_queue.push("存档功能预留中"))
 	pause_menu.exit_requested.connect(func() -> void: GameManager.change_scene("res://scenes/main/boot.tscn"))
 	top_bar.open_backpack.connect(_toggle_backpack)
-	_selector = BuildingSelector.new()
-	get_tree().current_scene.add_child(_selector)
-	_selector.building_selected.connect(_on_building_clicked)
+	call_deferred("_spawn_selector")
 	EventBus.villager_injured.connect(func(id: String) -> void: toast_queue.push("居民受伤了（ID %s），将休养数日" % id))
 	EventBus.building_destroyed.connect(func(id: String) -> void: toast_queue.push("建筑被摧毁：" + id))
 	EventBus.building_built.connect(func(id: String) -> void: toast_queue.push("建筑建成：" + id))
 	EventBus.pickup_collected.connect(func(resource_id: String, amount: int) -> void: toast_queue.push("%s +%d" % [resource_name(resource_id), amount]))
 	EventBus.wave_spawned.connect(func(count: int) -> void: toast_queue.push("夜晚波次来袭（%d 只怪物）" % count))
 	EventBus.villager_converted.connect(func(display_name: String, job: String) -> void: toast_queue.push("%s 成为%s" % [display_name, "伐木工" if job == "woodcutter" else job]))
+
+func _spawn_selector() -> void:
+	if _selector != null:
+		return
+	_selector = BuildingSelector.new()
+	get_tree().current_scene.add_child(_selector)
+	_selector.building_selected.connect(_on_building_clicked)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if GameManager.is_placing:

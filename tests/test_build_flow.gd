@@ -24,7 +24,13 @@ func _run() -> void:
 	var town: Node2D = load("res://scenes/town/town.tscn").instantiate()
 	add_child(town)
 	await get_tree().process_frame
+	await get_tree().process_frame
 	var hud: CanvasLayer = town.get_node("HUD")
+	var has_selector := false
+	for c in get_tree().current_scene.get_children():
+		if c is BuildingSelector:
+			has_selector = true
+	check(has_selector, "HUD 应创建建筑选择器")
 	Input.parse_input_event(_key(KEY_B, true))
 	Input.parse_input_event(_key(KEY_B, false))
 	await get_tree().process_frame
