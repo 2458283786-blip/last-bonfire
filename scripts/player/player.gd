@@ -20,12 +20,19 @@ extends CharacterBody2D
 @export var arrow_speed: float = 520.0
 ## 箭矢场景（arrow.tscn）
 @export var arrow_scene: PackedScene
+## 最大生命值（血条制）
+@export var max_hp: float = 100.0
+## 受击无敌时长（秒）
+@export var invincible_time: float = 1.0
 
 var facing := 1
 var is_attacking := false
 var attack_timer := 0.0
 var attack_cooldown_timer := 0.0
 var bow_cooldown_timer := 0.0
+var hp: float = 100.0
+var invincible_timer := 0.0
+var is_dead := false
 var _prev_jump_pressed := false
 var _prev_attack_pressed := false
 var _prev_bow_pressed := false
@@ -36,6 +43,7 @@ var _prev_bow_pressed := false
 
 func _ready() -> void:
 	add_to_group("players")
+	hp = max_hp
 	sprite.sprite_frames = PlayerAnimations.build_sprite_frames()
 	sprite.play("idle")
 
@@ -59,8 +67,41 @@ func _physics_process(delta: float) -> void:
 		try_shoot_bow()
 	_prev_bow_pressed = bow_pressed
 	_tick_timers(delta)
+	invincible_timer = maxf(invincible_timer - delta, 0.0)
 	move_and_slide()
 	_update_visual()
+
+## 受击：扣除血量并进入无敌；血量归零回篝火复活（无彻底失败）。
+func take_damage(amount: float) -> void:
+	if is_dead or invincible_timer > 0.0:
+		return
+	hp -= amount
+	invincible_timer = invincible_time
+	if hp <= 0.0:
+		_die()
+
+func _die() -> void:
+	is_dead = true
+	hp = max_hp
+	invincible_timer = invincible_time
+	var bonfire := _nearest_in_group("bonfires")
+	if bonfire != null:
+		global_position = (bonfire as Node2D).global_position
+	is_dead = false
+	EventBus.player_died.emit()
+
+func _nearest_in_group(group: String) -> Node2D:
+	var best: Node2D = null
+	var best_dist := INF
+	for node in get_tree().get_nodes_in_group(group):
+		var n := node as Node2D
+		if n == null:
+			continue
+		var d := global_position.distance_to(n.global_position)
+		if d < best_dist:
+			best_dist = d
+			best = n
+	return best
 
 func _tick_timers(delta: float) -> void:
 	attack_cooldown_timer = maxf(attack_cooldown_timer - delta, 0.0)

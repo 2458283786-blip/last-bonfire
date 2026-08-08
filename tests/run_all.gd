@@ -30,6 +30,7 @@ const TEST_SCRIPTS := [
 	"res://tests/test_woodcutter_hut_release.gd",
 	"res://tests/test_enemy.gd",
 	"res://tests/test_enemy_ai.gd",
+	"res://tests/test_player_hp.gd",
 ]
 const INPUT_ACTIONS := ["move_left", "move_right", "jump", "attack", "bow"]
 

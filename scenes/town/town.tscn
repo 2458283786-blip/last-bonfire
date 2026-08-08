@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" path="res://scenes/buildings/woodcutter_hut.tscn" id="7_vb1k2"]
 [ext_resource type="PackedScene" path="res://scenes/villagers/villager.tscn" id="8_g3yvl"]
 [ext_resource type="PackedScene" uid="uid://balcd3tikf5n" path="res://scenes/resources/wild_tree_spawner.tscn" id="9_jil70"]
+[ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="10_hud"]
 
 [sub_resource type="RectangleShape2D" id="Rect_ground"]
 size = Vector2(1920, 40)
@@ -504,6 +505,8 @@ offset_bottom = 140.0
 theme_override_font_sizes/font_size = 36
 text = "城镇场景（占位）"
 horizontal_alignment = 1
+
+[node name="HUD" parent="." instance=ExtResource("10_hud")]
 
 [node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=962634336]
 scale = Vector2(4, 4)
