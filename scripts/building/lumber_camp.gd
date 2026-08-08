@@ -2,8 +2,11 @@ class_name LumberCamp
 extends Node2D
 ## 伐木场（资源生成建筑）：在周围生成固定数量的城内树，供伐木工砍伐。
 
+## 生成的城内树场景（默认 tree.tscn）
 @export var tree_scene: PackedScene
+## 在伐木场周围生成几棵树
 @export var tree_count: int = 6
+## 树围绕伐木场的分布半径
 @export var spawn_radius: float = 120.0
 
 func _ready() -> void:

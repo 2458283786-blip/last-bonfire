@@ -5,8 +5,11 @@ extends Area2D
 
 signal depleted(node: ResourceNode)
 
+## 资源配置：血量、产出资源、重生天数等（tree.tres / rock.tres）
 @export var data: ResourceData
+## 砍倒后生成的掉落物场景（默认 pickup.tscn）
 @export var pickup_scene: PackedScene
+## 存档用唯一标识，可留空
 @export var instance_id: String = ""
 
 var current_hp := 0

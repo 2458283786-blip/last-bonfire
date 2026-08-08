@@ -5,9 +5,13 @@ extends CharacterBody2D
 
 enum WorkState { IDLE, FIND_TREE, TRAVEL_TO_TREE, CHOPPING, PICKUP, TRAVEL_TO_STORAGE, DEPOSIT }
 
+## 行走速度（像素/秒）
 @export var move_speed: float = 180.0
+## 离目标多近算"到了"（用于砍树/捡取/入库）
 @export var interact_range: float = 30.0
+## 每多少秒砍一下
 @export var chop_interval: float = 1.0
+## 一次最多背多少份资源
 @export var carry_capacity: int = 3
 
 var villager_id := 0

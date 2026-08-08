@@ -3,6 +3,7 @@ extends Node2D
 ## 伐木屋（职业转换建筑）：把空闲居民转职为伐木工，提供名额。
 ## 不产资源，资源生成由伐木场负责。
 
+## 可转职为伐木工的居民名额
 @export var job_slots: int = 2
 
 var assigned: Array[Villager] = []

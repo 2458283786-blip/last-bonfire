@@ -3,14 +3,22 @@ extends CharacterBody2D
 ## 玩家角色：移动 / 跳跃 / 近战 / 弓箭。
 ## 移动与跳跃参数集中在下方 @export，便于后续迁移到 resources/data 配置。
 
+## 行走速度（像素/秒）
 @export var move_speed: float = 260.0
+## 跳跃初速度（负值向上）
 @export var jump_velocity: float = -420.0
+## 重力加速度
 @export var gravity: float = 1200.0
 
+## 攻击命中框持续时长（秒）
 @export var attack_duration: float = 0.25
+## 攻击冷却（秒）
 @export var attack_cooldown: float = 0.5
+## 射箭冷却（秒）
 @export var bow_cooldown: float = 0.6
+## 箭矢飞行速度
 @export var arrow_speed: float = 520.0
+## 箭矢场景（arrow.tscn）
 @export var arrow_scene: PackedScene
 
 var facing := 1
