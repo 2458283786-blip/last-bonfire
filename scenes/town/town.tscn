@@ -10,6 +10,7 @@
 [ext_resource type="PackedScene" path="res://scenes/villagers/villager.tscn" id="8_g3yvl"]
 [ext_resource type="PackedScene" uid="uid://balcd3tikf5n" path="res://scenes/resources/wild_tree_spawner.tscn" id="9_jil70"]
 [ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="10_hud"]
+[ext_resource type="PackedScene" path="res://scenes/buildings/bonfire.tscn" id="11_bonfire"]
 
 [sub_resource type="RectangleShape2D" id="Rect_ground"]
 size = Vector2(1920, 40)
@@ -484,6 +485,7 @@ theme_override_font_sizes/font_size = 20
 text = "地下通道入口（预留）"
 
 [node name="TownStockpile" type="Node2D" parent="." unique_id=1960491828]
+groups=["town_stockpile"]
 position = Vector2(200, 830)
 
 [node name="Label" type="Label" parent="TownStockpile" unique_id=764392802]
@@ -493,6 +495,9 @@ offset_right = 60.0
 offset_bottom = -20.0
 text = "临时堆点"
 horizontal_alignment = 1
+
+[node name="Bonfire" parent="." instance=ExtResource("11_bonfire")]
+position = Vector2(200, 830)
 
 [node name="Player" parent="." unique_id=948302446 instance=ExtResource("2_player")]
 position = Vector2(400, 850)

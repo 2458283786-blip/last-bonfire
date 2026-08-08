@@ -1,5 +1,5 @@
 class_name LumberCamp
-extends Node2D
+extends Building
 ## 伐木场（资源生成建筑）：在周围生成固定数量的城内树，供伐木工砍伐。
 
 ## 生成的城内树场景（默认 tree.tscn）
@@ -10,6 +10,7 @@ extends Node2D
 @export var spawn_radius: float = 120.0
 
 func _ready() -> void:
+	super._ready()
 	add_to_group("lumber_camps")
 	_spawn_trees()
 

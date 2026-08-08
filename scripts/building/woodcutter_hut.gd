@@ -1,5 +1,5 @@
 class_name WoodcutterHut
-extends Node2D
+extends Building
 ## 伐木屋（职业转换建筑）：把空闲居民转职为伐木工，提供名额。
 ## 不产资源，资源生成由伐木场负责。
 
@@ -9,6 +9,7 @@ extends Node2D
 var assigned: Array[Villager] = []
 
 func _ready() -> void:
+	super._ready()
 	add_to_group("job_huts")
 
 func can_accept_villager(_v: Villager) -> bool:
