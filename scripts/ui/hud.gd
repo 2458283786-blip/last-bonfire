@@ -10,6 +10,7 @@ extends CanvasLayer
 @onready var villager_panel: PanelContainer = $VillagerPanel
 @onready var pause_menu: PanelContainer = $PauseMenu
 @onready var backpack_panel: PanelContainer = $BackpackPanel
+@onready var placement_hint: Label = $PlacementHint
 
 var _selector: BuildingSelector = null
 
@@ -80,14 +81,17 @@ func _on_building_selected(data: BuildingData) -> void:
 	controller.placement_canceled.connect(_on_placement_canceled.bind(controller))
 	controller.placement_rejected.connect(func(reason: String) -> void: toast_queue.push("无法建造：" + reason))
 	GameManager.set_placing(true)
-	toast_queue.push("左键放置 · 右键/Esc 取消（%s）" % data.display_name)
+	placement_hint.visible = true
+	placement_hint.text = "左键 / 空格 / 回车：放置　·　右键 / Esc：取消（%s）" % data.display_name
 
 func _on_placement_confirmed(_data: BuildingData, _pos: Vector2, controller: PlacementController) -> void:
 	GameManager.set_placing(false)
+	placement_hint.visible = false
 	controller.queue_free()
 
 func _on_placement_canceled(controller: PlacementController) -> void:
 	GameManager.set_placing(false)
+	placement_hint.visible = false
 	controller.queue_free()
 
 func _on_building_clicked(b: Building) -> void:

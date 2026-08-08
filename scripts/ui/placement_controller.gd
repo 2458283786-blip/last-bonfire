@@ -75,6 +75,8 @@ func _unhandled_input(event: InputEvent) -> void:
 			cancel()
 	elif event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
 		cancel()
+	elif event is InputEventKey and event.pressed and (event.keycode == KEY_SPACE or event.keycode == KEY_ENTER):
+		_confirm()
 
 func _confirm() -> void:
 	if not _active or _ghost == null:

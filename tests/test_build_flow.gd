@@ -60,6 +60,7 @@ func _run() -> void:
 		if b.global_position.distance_to(Vector2(500, 855)) < 1.0:
 			placed = true
 	check(placed, "应在鼠标位置生成建筑")
+	check(not hud.get_node("PlacementHint").visible, "放置成功后提示应隐藏")
 	# 再进一次放置，验证非法位置被拒且 Esc 可取消
 	Input.parse_input_event(_key(KEY_B, true))
 	Input.parse_input_event(_key(KEY_B, false))
@@ -69,6 +70,10 @@ func _run() -> void:
 	card.pressed.emit()
 	await get_tree().process_frame
 	check(GameManager.is_placing, "第二次进入放置模式")
+	check(hud.get_node("PlacementHint").visible, "放置时提示应显示")
+	Input.parse_input_event(_key(KEY_SPACE, true))
+	await get_tree().process_frame
+	check(GameManager.is_placing, "空格在无效位置不应放置")
 	Input.parse_input_event(_key(KEY_ESCAPE, true))
 	await get_tree().process_frame
 	check(not GameManager.is_placing, "Esc 应取消放置")
