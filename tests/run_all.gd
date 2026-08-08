@@ -14,6 +14,8 @@ const TEST_SCRIPTS := [
 	"res://tests/test_dungeon_template.gd",
 	"res://tests/test_day_manager.gd",
 	"res://tests/test_economy_manager.gd",
+	"res://tests/test_resource_node.gd",
+	"res://tests/test_pickup.gd",
 ]
 const INPUT_ACTIONS := ["move_left", "move_right", "jump", "attack", "bow"]
 
@@ -34,13 +36,19 @@ func _run_all() -> void:
 		for action in INPUT_ACTIONS:
 			Input.action_release(action)
 		print("=== 运行测试: ", script_name)
-		var test: Node = (load(path) as GDScript).new()
+		var script_res: Resource = load(path)
+		if script_res == null:
+			push_error("[FAIL] 无法加载测试脚本: " + path)
+			code = 1
+			continue
+		var test: Node = (script_res as GDScript).new()
 		test.name = script_name
 		add_child(test)
 		var ok: bool = await test.finished
 		if not ok:
 			code = 1
 		test.queue_free()
+		await get_tree().process_frame
 	if code == 0:
 		print("[PASS] 全部测试通过")
 	else:

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ResourceData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/economy/resource_data.gd" id="1_data"]
+
+[resource]
+script = ExtResource("1_data")
+id = "tree"
+display_name = "树木"
+max_hp = 3
+chop_damage = 1
+drop_resource = "wood"
+drop_amount = 1
+respawn_days = 2
+required_job = "woodcutter"
