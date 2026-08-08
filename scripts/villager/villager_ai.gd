@@ -22,6 +22,10 @@ enum WorkState { IDLE, FIND_WORK, TRAVEL_TO_WORK, WORKING, PICKUP, TRAVEL_TO_STO
 @export var wander_wait_max: float = 4.0
 ## 移动被卡住多少帧后重新找目标
 @export var stuck_frames_limit: int = 30
+## 居民最大生命（被怪物攻击用）
+@export var max_hp: float = 20.0
+## 受伤后失去工作能力的天数
+@export var injured_days: int = 2
 
 var villager_id := 0
 var job := "idle"
@@ -38,12 +42,44 @@ var wander_timer := 0.0
 var wander_wait := 0.0
 var _last_position := Vector2.ZERO
 var _stuck_frames := 0
+var hp: float = 20.0
+var is_injured := false
+var injured_remaining_days := 0
 
 func _ready() -> void:
 	villager_id = get_instance_id()
 	add_to_group("villagers")
 	home_position = global_position
 	_last_position = global_position
+	hp = max_hp
+	DayManager.day_changed.connect(_on_day_changed)
+
+## 被怪物攻击：血量归零后进入受伤状态（非死亡），失去 N 日工作能力。
+func take_damage(amount: float) -> void:
+	if is_injured or hp <= 0.0:
+		return
+	hp -= amount
+	if hp <= 0.0:
+		_injure()
+
+func _injure() -> void:
+	is_injured = true
+	injured_remaining_days = injured_days
+	hp = 0.0
+	for hut in get_tree().get_nodes_in_group("job_huts"):
+		if hut.has_method("release_villager"):
+			hut.release_villager(self)
+	job = "idle"
+	current_job = null
+	work_target = null
+	state = WorkState.IDLE
+
+func _on_day_changed(_day: int) -> void:
+	if is_injured:
+		injured_remaining_days -= 1
+		if injured_remaining_days <= 0:
+			is_injured = false
+			hp = max_hp
 
 func set_job(new_job: String) -> void:
 	job = new_job
@@ -83,6 +119,11 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 
 func _update_idle() -> void:
+	if is_injured:
+		wander_timer = 0.0
+		wander_wait = randf_range(wander_wait_min, wander_wait_max)
+		state = WorkState.WANDER
+		return
 	if job != "idle":
 		state = WorkState.FIND_WORK
 		return
@@ -191,7 +232,7 @@ func _check_stuck(fallback_state: WorkState) -> void:
 ## ---------- 无职业居民漫游 ----------
 
 func _wander(delta: float) -> void:
-	if _try_auto_convert():
+	if not is_injured and _try_auto_convert():
 		return
 	if wander_target == Vector2.ZERO:
 		wander_timer += delta
@@ -259,5 +300,8 @@ func _move_toward(target_pos: Vector2, delta: float) -> bool:
 	if dist <= interact_range:
 		velocity.x = 0.0
 		return true
-	velocity.x = to_target.normalized().x * move_speed
+	var speed := move_speed
+	if is_injured:
+		speed *= 0.5
+	velocity.x = to_target.normalized().x * speed
 	return false
