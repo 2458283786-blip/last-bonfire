@@ -20,6 +20,8 @@ const TEST_SCRIPTS := [
 	"res://tests/test_buildings.gd",
 	"res://tests/test_wild_spawner.gd",
 	"res://tests/test_wild_spawner_visual.gd",
+	"res://tests/test_villager_passes_player.gd",
+	"res://tests/test_villager_deposit_idle.gd",
 ]
 const INPUT_ACTIONS := ["move_left", "move_right", "jump", "attack", "bow"]
 

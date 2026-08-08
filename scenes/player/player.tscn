@@ -10,6 +10,8 @@ height = 48.0
 size = Vector2(28, 20)
 
 [node name="Player" type="CharacterBody2D" unique_id=1769593861]
+collision_layer = 2
+collision_mask = 1
 script = ExtResource("1_player")
 arrow_scene = ExtResource("2_arrow")
 

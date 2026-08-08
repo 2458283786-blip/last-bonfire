@@ -23,6 +23,7 @@ func _run() -> void:
 	spawner.max_trees = 5
 	spawner.min_spacing = 64.0
 	add_child(spawner)
+	await get_tree().process_frame
 	check(spawner.count_available_wild() == 5, "生成器应补足到 max_trees")
 	var all_in_zone := true
 	for node in get_tree().get_nodes_in_group("resources"):

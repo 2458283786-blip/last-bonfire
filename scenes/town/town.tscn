@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" path="res://scenes/buildings/storage.tscn" id="6_jil70"]
 [ext_resource type="PackedScene" path="res://scenes/buildings/woodcutter_hut.tscn" id="7_vb1k2"]
 [ext_resource type="PackedScene" path="res://scenes/villagers/villager.tscn" id="8_g3yvl"]
+[ext_resource type="PackedScene" uid="uid://balcd3tikf5n" path="res://scenes/resources/wild_tree_spawner.tscn" id="9_jil70"]
 
 [sub_resource type="RectangleShape2D" id="Rect_ground"]
 size = Vector2(1920, 40)
@@ -452,6 +453,9 @@ texture = ExtResource("4_8b7wv")
 sources/0 = SubResource("TileSetAtlasSource_8b7wv")
 sources/2 = SubResource("TileSetAtlasSource_06row")
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_vkqoe"]
+size = Vector2(731, 78)
+
 [node name="Town" type="Node2D" unique_id=1371067301]
 script = ExtResource("1_town")
 
@@ -507,19 +511,30 @@ tile_map_data = PackedByteArray("AAAAADcAAAAEAAEAAAABADcAAAAEAAEAAAACADcAAAAEAAE
 tile_set = SubResource("TileSet_vkqoe")
 
 [node name="LumberCamp" parent="." unique_id=1364202087 instance=ExtResource("5_5vpkg")]
-position = Vector2(1687, 837)
+position = Vector2(929, 855)
 
 [node name="Storage" parent="." unique_id=6981898 instance=ExtResource("6_jil70")]
-position = Vector2(573, 833)
+position = Vector2(841, 862)
 
 [node name="WoodcutterHut" parent="." unique_id=1901368378 instance=ExtResource("7_vb1k2")]
-position = Vector2(1324, 835)
+position = Vector2(1112, 865)
 
-[node name="Villager" parent="." unique_id=1307028690 instance=ExtResource("8_g3yvl")]
+[node name="Villagers" type="Node2D" parent="." unique_id=916226726]
+
+[node name="Villager" parent="Villagers" unique_id=1307028690 instance=ExtResource("8_g3yvl")]
 position = Vector2(277, 853)
 
-[node name="Villager2" parent="." unique_id=2073914033 instance=ExtResource("8_g3yvl")]
+[node name="Villager2" parent="Villagers" unique_id=2073914033 instance=ExtResource("8_g3yvl")]
 position = Vector2(78, 844)
 
-[node name="Villager3" parent="." unique_id=1434621787 instance=ExtResource("8_g3yvl")]
+[node name="Villager3" parent="Villagers" unique_id=1434621787 instance=ExtResource("8_g3yvl")]
 position = Vector2(505, 862)
+
+[node name="WildTreeSpawner2" parent="." unique_id=812590088 instance=ExtResource("9_jil70")]
+position = Vector2(1793, 827)
+
+[node name="Area2D" type="Area2D" parent="WildTreeSpawner2" unique_id=364350754]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WildTreeSpawner2/Area2D" unique_id=1320413292]
+position = Vector2(-122.5, 29)
+shape = SubResource("RectangleShape2D_vkqoe")

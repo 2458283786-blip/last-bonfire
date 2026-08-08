@@ -144,17 +144,16 @@ func _travel_to_storage(delta: float) -> void:
 func _deposit() -> void:
 	var storage: Node2D = _get_storage()
 	if storage == null:
+		state = WorkState.IDLE
 		return
-	var deposited_any := false
 	for id in carry.keys():
 		var amount: int = carry[id]
 		var accepted := EconomyManager.deposit(id, amount)
 		if accepted > 0:
 			carry[id] = amount - accepted
-			deposited_any = true
 		if carry[id] <= 0:
 			carry.erase(id)
-	if deposited_any:
+	if carry.is_empty():
 		state = WorkState.FIND_TREE
 
 func _get_storage() -> Node2D:

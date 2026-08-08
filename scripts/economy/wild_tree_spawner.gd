@@ -15,7 +15,7 @@ extends Node2D
 func _ready() -> void:
 	add_to_group("wild_spawners")
 	DayManager.day_changed.connect(_on_day_changed)
-	_refill()
+	_refill.call_deferred()
 
 func _on_day_changed(_day: int) -> void:
 	_refill()

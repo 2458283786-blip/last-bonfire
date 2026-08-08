@@ -30,6 +30,7 @@ func _run() -> void:
 	spawner.add_child(zone_area)
 	zone_area.position = Vector2(500, 150)
 	add_child(spawner)
+	await get_tree().process_frame
 	check(spawner.count_available_wild() == 3, "可视区域生成器应补足到 max_trees")
 	var in_zone := true
 	for node in get_tree().get_nodes_in_group("resources"):
