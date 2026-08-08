@@ -5,7 +5,7 @@ signal finished(ok: bool)
 var failures: Array[String] = []
 var assertions := 0
 var _done := false
-const REQUIRED_ACTIONS := ["move_left", "move_right", "jump", "attack", "bow", "interact"]
+const REQUIRED_ACTIONS := ["move_left", "move_right", "jump", "attack", "bow", "interact", "build_menu", "villager_panel", "pause", "backpack"]
 
 func _ready() -> void:
 	get_tree().create_timer(20.0).timeout.connect(_on_timeout)
