@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="BuildingData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/building/building_data.gd" id="1_data"]
+[ext_resource type="PackedScene" path="res://scenes/buildings/lumber_camp.tscn" id="2_scene"]
+
+[resource]
+script = ExtResource("1_data")
+id = "lumber_camp"
+display_name = "伐木场"
+description = "在周围生成城内树，供伐木工砍伐（资源生成建筑）。"
+cost = {"wood": 20, "stone": 5}
+icon_color = Color(0.32, 0.55, 0.24, 1)
+scene = ExtResource("2_scene")
+footprint_half_width = 48.0
+upgrade_cost = {"wood": 25, "stone": 8}
+upgrade_effect = "城内树 +3"

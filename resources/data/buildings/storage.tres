@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="BuildingData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/building/building_data.gd" id="1_data"]
+[ext_resource type="PackedScene" path="res://scenes/buildings/storage.tscn" id="2_scene"]
+
+[resource]
+script = ExtResource("1_data")
+id = "storage"
+display_name = "仓库"
+description = "扩容库存容量，是居民的搬运目标。"
+cost = {"wood": 10, "stone": 5}
+icon_color = Color(0.72, 0.53, 0.26, 1)
+scene = ExtResource("2_scene")
+footprint_half_width = 48.0
+upgrade_cost = {"wood": 15, "stone": 8}
+upgrade_effect = "容量 +80"

@@ -35,6 +35,7 @@ const TEST_SCRIPTS := [
 	"res://tests/test_villager_injury.gd",
 	"res://tests/test_player_combat_enemy.gd",
 	"res://tests/test_night_wave.gd",
+	"res://tests/test_building_data.gd",
 ]
 const INPUT_ACTIONS := ["move_left", "move_right", "jump", "attack", "bow"]
 
