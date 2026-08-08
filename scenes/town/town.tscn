@@ -466,6 +466,7 @@ script = ExtResource("1_town")
 [node name="Background" type="ColorRect" parent="." unique_id=1803294771]
 offset_right = 1920.0
 offset_bottom = 1080.0
+mouse_filter = 2
 color = Color(0.16, 0.19, 0.25, 1)
 
 [node name="GroundBody" type="StaticBody2D" parent="." unique_id=2091051791]

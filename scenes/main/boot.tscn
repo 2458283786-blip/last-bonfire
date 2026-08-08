@@ -8,6 +8,7 @@ script = ExtResource("1_boot")
 [node name="Background" type="ColorRect" parent="."]
 offset_right = 1920.0
 offset_bottom = 1080.0
+mouse_filter = 2
 color = Color(0.11, 0.12, 0.18, 1)
 
 [node name="Title" type="Label" parent="."]
