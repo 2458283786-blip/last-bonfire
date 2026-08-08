@@ -5,6 +5,7 @@ extends Node2D
 
 signal placement_confirmed(data: BuildingData, pos: Vector2)
 signal placement_canceled
+signal placement_rejected(reason: String)
 
 ## 可放置区域（世界坐标）
 @export var bounds: Rect2 = Rect2(50, 800, 1820, 120)
@@ -80,9 +81,11 @@ func _confirm() -> void:
 		return
 	var pos := _ghost.global_position
 	if not can_place(pos):
+		placement_rejected.emit(_reject_reason(pos))
 		return
 	for id in data.cost:
 		if EconomyManager.get_amount(id) < int(data.cost[id]):
+			placement_rejected.emit("资源不足，无法建造")
 			return
 	for id in data.cost:
 		EconomyManager.withdraw(id, int(data.cost[id]))
@@ -94,3 +97,18 @@ func _confirm() -> void:
 	_active = false
 	EventBus.building_built.emit(data.id)
 	placement_confirmed.emit(data, pos)
+
+func _reject_reason(pos: Vector2) -> String:
+	if not bounds.has_point(pos):
+		return "超出可建造区域"
+	if absf(pos.y - ground_y) > ground_tolerance:
+		return "位置高度不合适"
+	for node in get_tree().get_nodes_in_group("buildings"):
+		var b := node as Node2D
+		if b == null:
+			continue
+		if b is Building and b.is_destroyed:
+			continue
+		if pos.distance_to(b.global_position) < min_spacing:
+			return "与已有建筑过近"
+	return "位置不可建造"

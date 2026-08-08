@@ -78,7 +78,9 @@ func _on_building_selected(data: BuildingData) -> void:
 	controller.begin(data)
 	controller.placement_confirmed.connect(_on_placement_confirmed.bind(controller))
 	controller.placement_canceled.connect(_on_placement_canceled.bind(controller))
+	controller.placement_rejected.connect(func(reason: String) -> void: toast_queue.push("无法建造：" + reason))
 	GameManager.set_placing(true)
+	toast_queue.push("左键放置 · 右键/Esc 取消（%s）" % data.display_name)
 
 func _on_placement_confirmed(_data: BuildingData, _pos: Vector2, controller: PlacementController) -> void:
 	GameManager.set_placing(false)
