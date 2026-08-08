@@ -24,6 +24,7 @@ func _run() -> void:
 	check(player is Player, "城镇场景应包含 Player 节点")
 	check(town.get_node_or_null("GroundBody") != null, "城镇应有地面碰撞体")
 	check(town.get_node_or_null("DungeonEntrance") != null, "城镇应有地下通道入口标记")
+	check(town.get_node_or_null("TownStockpile") != null, "城镇应有临时堆点")
 	if player is Player:
 		check(player.global_position.y > 0, "玩家应在地面上方生成")
 	finish(failures.is_empty())
