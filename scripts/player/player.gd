@@ -24,6 +24,8 @@ extends CharacterBody2D
 @export var max_hp: float = 100.0
 ## 受击无敌时长（秒）
 @export var invincible_time: float = 1.0
+## 近战攻击力
+@export var attack_damage: int = 1
 
 var facing := 1
 var is_attacking := false
@@ -36,14 +38,17 @@ var is_dead := false
 var _prev_jump_pressed := false
 var _prev_attack_pressed := false
 var _prev_bow_pressed := false
+var _attack_hits_applied := false
 
 @onready var sprite: AnimatedSprite2D = $Sprite
 @onready var attack_hitbox: Area2D = $AttackHitbox
 @onready var bow_spawn: Marker2D = $BowSpawn
+@onready var pickup_area: Area2D = $PickupArea
 
 func _ready() -> void:
 	add_to_group("players")
 	hp = max_hp
+	pickup_area.area_entered.connect(_on_pickup_area_entered)
 	sprite.sprite_frames = PlayerAnimations.build_sprite_frames()
 	sprite.play("idle")
 
@@ -107,6 +112,8 @@ func _tick_timers(delta: float) -> void:
 	attack_cooldown_timer = maxf(attack_cooldown_timer - delta, 0.0)
 	bow_cooldown_timer = maxf(bow_cooldown_timer - delta, 0.0)
 	if is_attacking:
+		if not _attack_hits_applied and _apply_attack_hits():
+			_attack_hits_applied = true
 		attack_timer -= delta
 		if attack_timer <= 0.0:
 			is_attacking = false
@@ -119,6 +126,25 @@ func try_attack() -> void:
 	attack_timer = attack_duration
 	attack_cooldown_timer = attack_cooldown
 	attack_hitbox.monitoring = true
+	_attack_hits_applied = false
+
+## 攻击命中结算：对命中框内的敌人造成一次伤害；命中任意敌人返回 true。
+func _apply_attack_hits() -> bool:
+	var hit_any := false
+	for body in attack_hitbox.get_overlapping_bodies():
+		if body is Enemy:
+			body.take_damage(attack_damage)
+			hit_any = true
+	return hit_any
+
+## 走过拾取物自动拾取入库。
+func _on_pickup_area_entered(area: Area2D) -> void:
+	var pickup := area as Pickup
+	if pickup == null:
+		return
+	var got := pickup.take()
+	if not got.is_empty():
+		EconomyManager.deposit(str(got["resource_id"]), int(got["amount"]))
 
 func try_shoot_bow() -> void:
 	if bow_cooldown_timer > 0.0:

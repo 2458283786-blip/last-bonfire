@@ -9,6 +9,9 @@ height = 48.0
 [sub_resource type="RectangleShape2D" id="Rect_hitbox"]
 size = Vector2(28, 20)
 
+[sub_resource type="CircleShape2D" id="Circle_pickup"]
+radius = 26.0
+
 [node name="Player" type="CharacterBody2D" unique_id=1769593861]
 collision_layer = 2
 collision_mask = 9
@@ -27,9 +30,16 @@ scale = Vector2(4, 4)
 [node name="AttackHitbox" type="Area2D" parent="." unique_id=300168609]
 position = Vector2(20, -4)
 monitoring = false
+collision_mask = 9
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="AttackHitbox" unique_id=927815871]
 shape = SubResource("Rect_hitbox")
+
+[node name="PickupArea" type="Area2D" parent="."]
+position = Vector2(0, -4)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PickupArea"]
+shape = SubResource("Circle_pickup")
 
 [node name="BowSpawn" type="Marker2D" parent="." unique_id=1593188657]
 position = Vector2(16, -10)
