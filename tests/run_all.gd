@@ -24,6 +24,10 @@ const TEST_SCRIPTS := [
 	"res://tests/test_villager_deposit_idle.gd",
 	"res://tests/test_villager_idle_wanders.gd",
 	"res://tests/test_villager_auto_convert.gd",
+	"res://tests/test_villager_job_filter.gd",
+	"res://tests/test_villager_carry_capacity.gd",
+	"res://tests/test_villager_stuck_wall.gd",
+	"res://tests/test_woodcutter_hut_release.gd",
 ]
 const INPUT_ACTIONS := ["move_left", "move_right", "jump", "attack", "bow"]
 

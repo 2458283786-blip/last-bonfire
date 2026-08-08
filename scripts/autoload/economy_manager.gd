@@ -6,18 +6,26 @@ signal stock_changed(resource_id: String, amount: int)
 
 const DEFAULT_CAPACITY := 20
 const STARTING_STOCK := {"wood": 10, "stone": 5}
+const CONFIG_PATH := "res://resources/data/game_config.tres"
 
 var stock: Dictionary = {}
 var capacity: int = DEFAULT_CAPACITY
+var _config: GameConfig = null
 
 func _ready() -> void:
+	_config = load(CONFIG_PATH) as GameConfig
 	reset()
 
 func reset() -> void:
 	stock.clear()
-	capacity = DEFAULT_CAPACITY
-	for id in STARTING_STOCK:
-		stock[id] = STARTING_STOCK[id]
+	if _config != null:
+		capacity = _config.default_capacity
+		for id in _config.starting_stock:
+			stock[id] = _config.starting_stock[id]
+	else:
+		capacity = DEFAULT_CAPACITY
+		for id in STARTING_STOCK:
+			stock[id] = STARTING_STOCK[id]
 	emit_changed("", 0)
 
 func get_amount(resource_id: String) -> int:

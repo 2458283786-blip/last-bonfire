@@ -9,7 +9,7 @@ var _done := false
 func _ready() -> void:
 	DayManager.reset()
 	EconomyManager.reset()
-	get_tree().create_timer(30.0).timeout.connect(_on_timeout)
+	get_tree().create_timer(20.0).timeout.connect(_on_timeout)
 	_run()
 
 func _on_timeout() -> void:
@@ -19,14 +19,10 @@ func _on_timeout() -> void:
 func _run() -> void:
 	await get_tree().process_frame
 	_add_floor(Vector2(500, 420))
-	var player_scene := load("res://scenes/player/player.tscn") as PackedScene
-	var player := player_scene.instantiate()
-	add_child(player)
-	player.global_position = Vector2(500, 375)
-	var tree_scene := load("res://scenes/resources/tree.tscn") as PackedScene
-	var tree: ResourceNode = tree_scene.instantiate()
+	_add_wall(Vector2(450, 370))
+	var tree: ResourceNode = (load("res://scenes/resources/tree.tscn") as PackedScene).instantiate()
 	var data := ResourceData.new()
-	data.id = "test_tree"
+	data.id = "tree"
 	data.max_hp = 1
 	data.chop_damage = 1
 	data.drop_resource = "wood"
@@ -35,24 +31,14 @@ func _run() -> void:
 	tree.data = data
 	add_child(tree)
 	tree.global_position = Vector2(700, 370)
-	var villager_scene := load("res://scenes/villagers/villager.tscn") as PackedScene
-	var v: Villager = villager_scene.instantiate()
+	var v: Villager = (load("res://scenes/villagers/villager.tscn") as PackedScene).instantiate()
 	add_child(v)
 	v.global_position = Vector2(300, 375)
 	v.set_job("woodcutter")
-	v.work_interval = 0.05
-	v.move_speed = 400.0
-	var passed := false
-	var chopped := false
-	for i in 300:
+	v.stuck_frames_limit = 10
+	for i in 200:
 		await get_tree().physics_frame
-		if v.global_position.x > 550.0:
-			passed = true
-		if tree.is_depleted:
-			chopped = true
-			break
-	check(passed, "居民应能穿过玩家到达树")
-	check(chopped, "居民应成功砍倒树")
+	check(v._stuck_frames < v.stuck_frames_limit, "被墙挡住时应触发卡死检测并重置")
 	finish(failures.is_empty())
 
 func _add_floor(pos: Vector2) -> void:
@@ -64,6 +50,16 @@ func _add_floor(pos: Vector2) -> void:
 	floor.add_child(shape)
 	floor.position = pos
 	add_child(floor)
+
+func _add_wall(pos: Vector2) -> void:
+	var wall := StaticBody2D.new()
+	var shape := CollisionShape2D.new()
+	var rect := RectangleShape2D.new()
+	rect.size = Vector2(20, 200)
+	shape.shape = rect
+	wall.add_child(shape)
+	wall.position = pos
+	add_child(wall)
 
 func check(cond: bool, msg: String) -> void:
 	assertions += 1

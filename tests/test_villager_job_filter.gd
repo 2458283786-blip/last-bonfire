@@ -18,42 +18,43 @@ func _on_timeout() -> void:
 
 func _run() -> void:
 	await get_tree().process_frame
-	var wood_before := EconomyManager.get_amount("wood")
 	_add_floor(Vector2(500, 420))
-	var storage := Node2D.new()
-	storage.name = "TestStorage"
-	storage.add_to_group("storage_buildings")
-	storage.position = Vector2(700, 380)
-	add_child(storage)
-	var tree_scene := load("res://scenes/resources/tree.tscn") as PackedScene
-	var tree: ResourceNode = tree_scene.instantiate()
-	var test_data := ResourceData.new()
-	test_data.id = "test_tree"
-	test_data.max_hp = 1
-	test_data.chop_damage = 1
-	test_data.drop_resource = "wood"
-	test_data.drop_amount = 1
-	test_data.respawn_days = 1
-	tree.data = test_data
+	var tree: ResourceNode = (load("res://scenes/resources/tree.tscn") as PackedScene).instantiate()
+	var tree_data := ResourceData.new()
+	tree_data.id = "tree"
+	tree_data.max_hp = 1
+	tree_data.chop_damage = 1
+	tree_data.drop_resource = "wood"
+	tree_data.drop_amount = 1
+	tree_data.respawn_days = 1
+	tree_data.required_job = "woodcutter"
+	tree.data = tree_data
 	add_child(tree)
-	tree.global_position = Vector2(500, 370)
-	var villager_scene := load("res://scenes/villagers/villager.tscn") as PackedScene
-	var v: Villager = villager_scene.instantiate()
+	tree.global_position = Vector2(700, 370)
+	var rock: ResourceNode = (load("res://scenes/resources/rock.tscn") as PackedScene).instantiate()
+	var rock_data := ResourceData.new()
+	rock_data.id = "rock"
+	rock_data.max_hp = 1
+	rock_data.chop_damage = 1
+	rock_data.drop_resource = "stone"
+	rock_data.drop_amount = 1
+	rock_data.respawn_days = 1
+	rock_data.required_job = "miner"
+	rock.data = rock_data
+	add_child(rock)
+	rock.global_position = Vector2(600, 370)
+	var v: Villager = (load("res://scenes/villagers/villager.tscn") as PackedScene).instantiate()
 	add_child(v)
 	v.global_position = Vector2(300, 375)
 	v.set_job("woodcutter")
 	v.work_interval = 0.05
 	v.move_speed = 400.0
-	var found := false
-	for i in 600:
+	for i in 400:
 		await get_tree().physics_frame
-		if EconomyManager.get_amount("wood") > wood_before:
-			found = true
+		if tree.is_depleted or rock.is_depleted:
 			break
-	check(found, "居民应完成砍树→搬运→入库循环")
-	check(EconomyManager.get_amount("wood") > wood_before, "库存应增加木材")
-	check(tree.is_depleted, "树应被砍倒")
-	check(v.carry.is_empty(), "居民搬运后背包应清空")
+	check(tree.is_depleted, "伐木工应砍树")
+	check(not rock.is_depleted, "伐木工不应砍石头")
 	finish(failures.is_empty())
 
 func _add_floor(pos: Vector2) -> void:

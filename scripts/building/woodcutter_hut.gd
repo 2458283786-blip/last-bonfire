@@ -18,3 +18,7 @@ func assign_villager(v: Villager) -> void:
 	if can_accept_villager(v) and not assigned.has(v):
 		assigned.append(v)
 		v.set_job("woodcutter")
+
+## 释放名额：居民死亡/被调离时调用，避免残留引用。
+func release_villager(v: Villager) -> void:
+	assigned.erase(v)

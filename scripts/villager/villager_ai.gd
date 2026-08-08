@@ -1,16 +1,17 @@
 class_name Villager
 extends CharacterBody2D
-## 居民 AI：工作状态机（当前支持伐木工：砍树→捡掉落物→运回仓库→入库）。
-## 移动为直线走向目标，后续复杂地图再接 NavigationAgent2D。
+## 居民 AI：通用工作流（找目标→移动→工作→捡取→搬运→入库）+ 职业策略。
+## 新增职业：在 scripts/villager/jobs/ 加一个类（实现 find_target / work），
+## 并在 _create_job 中注册即可，无需改动通用流程。
 
-enum WorkState { IDLE, FIND_TREE, TRAVEL_TO_TREE, CHOPPING, PICKUP, TRAVEL_TO_STORAGE, DEPOSIT, WANDER }
+enum WorkState { IDLE, FIND_WORK, TRAVEL_TO_WORK, WORKING, PICKUP, TRAVEL_TO_STORAGE, DEPOSIT, WANDER }
 
 ## 行走速度（像素/秒）
 @export var move_speed: float = 180.0
-## 离目标多近算"到了"（用于砍树/捡取/入库）
+## 离目标多近算"到了"（用于工作/捡取/入库）
 @export var interact_range: float = 30.0
-## 每多少秒砍一下
-@export var chop_interval: float = 1.0
+## 每多少秒执行一次工作动作（如砍一下）
+@export var work_interval: float = 1.0
 ## 一次最多背多少份资源
 @export var carry_capacity: int = 3
 ## 无职业居民在出生点附近的漫游半径
@@ -19,15 +20,18 @@ enum WorkState { IDLE, FIND_TREE, TRAVEL_TO_TREE, CHOPPING, PICKUP, TRAVEL_TO_ST
 @export var wander_wait_min: float = 1.5
 ## 无职业居民每次停下休息的最长秒数
 @export var wander_wait_max: float = 4.0
+## 移动被卡住多少帧后重新找目标
+@export var stuck_frames_limit: int = 30
 
 var villager_id := 0
 var job := "idle"
 var state := WorkState.IDLE
 var carry: Dictionary = {}
-var target_tree: ResourceNode = null
+var current_job: RefCounted = null
+var work_target: Node2D = null
 var target_pickup: Pickup = null
 var target_storage: Node2D = null
-var chop_timer := 0.0
+var work_timer := 0.0
 var home_position := Vector2.ZERO
 var wander_target := Vector2.ZERO
 var wander_timer := 0.0
@@ -43,9 +47,17 @@ func _ready() -> void:
 
 func set_job(new_job: String) -> void:
 	job = new_job
+	current_job = _create_job(new_job)
 	state = WorkState.IDLE
-	target_tree = null
+	work_target = null
 	target_pickup = null
+	work_timer = 0.0
+
+func _create_job(job_name: String) -> RefCounted:
+	match job_name:
+		"woodcutter":
+			return WoodcutterJob.new()
+	return null
 
 func _physics_process(delta: float) -> void:
 	if not is_on_floor():
@@ -54,12 +66,12 @@ func _physics_process(delta: float) -> void:
 	match state:
 		WorkState.IDLE:
 			_update_idle()
-		WorkState.FIND_TREE:
-			_find_tree()
-		WorkState.TRAVEL_TO_TREE:
-			_travel_to_tree(delta)
-		WorkState.CHOPPING:
-			_chop(delta)
+		WorkState.FIND_WORK:
+			_find_work()
+		WorkState.TRAVEL_TO_WORK:
+			_travel_to_work(delta)
+		WorkState.WORKING:
+			_work(delta)
 		WorkState.PICKUP:
 			_pickup(delta)
 		WorkState.TRAVEL_TO_STORAGE:
@@ -71,14 +83,14 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 
 func _update_idle() -> void:
-	if job == "woodcutter":
-		state = WorkState.FIND_TREE
-	elif job == "idle":
-		if _try_auto_convert():
-			return
-		wander_timer = 0.0
-		wander_wait = randf_range(wander_wait_min, wander_wait_max)
-		state = WorkState.WANDER
+	if job != "idle":
+		state = WorkState.FIND_WORK
+		return
+	if _try_auto_convert():
+		return
+	wander_timer = 0.0
+	wander_wait = randf_range(wander_wait_min, wander_wait_max)
+	state = WorkState.WANDER
 
 func _try_auto_convert() -> bool:
 	var hut := _nearest_in_group("job_huts")
@@ -87,8 +99,97 @@ func _try_auto_convert() -> bool:
 		return true
 	return false
 
-## 无职业居民漫游：走 → 停下休息 → 再走，保持在家附近；
-## 伐木屋一旦有空位立即转职；被墙挡住时换一个目标。
+## ---------- 通用工作流 ----------
+
+func _find_work() -> void:
+	if current_job == null:
+		state = WorkState.IDLE
+		return
+	var target: Node2D = current_job.find_target(self)
+	if target == null:
+		state = WorkState.IDLE
+		return
+	work_target = target
+	state = WorkState.TRAVEL_TO_WORK
+
+func _travel_to_work(delta: float) -> void:
+	if work_target == null or not is_instance_valid(work_target):
+		state = WorkState.FIND_WORK
+		return
+	if work_target.has_method("try_reserve") and not work_target.try_reserve(villager_id):
+		state = WorkState.FIND_WORK
+		return
+	if _move_toward(work_target.global_position, delta):
+		work_timer = 0.0
+		state = WorkState.WORKING
+		return
+	_check_stuck(WorkState.FIND_WORK)
+
+func _work(delta: float) -> void:
+	if current_job == null or work_target == null or not is_instance_valid(work_target):
+		state = WorkState.PICKUP
+		return
+	if current_job.work(self, delta):
+		state = WorkState.PICKUP
+
+func _pickup(delta: float) -> void:
+	if _carry_total() >= carry_capacity:
+		state = WorkState.TRAVEL_TO_STORAGE
+		return
+	target_pickup = _nearest_pickup()
+	if target_pickup == null:
+		state = WorkState.FIND_WORK
+		return
+	if _move_toward(target_pickup.global_position, delta):
+		var got := target_pickup.take()
+		if not got.is_empty():
+			carry[got["resource_id"]] = carry.get(got["resource_id"], 0) + got["amount"]
+		state = WorkState.TRAVEL_TO_STORAGE
+
+func _carry_total() -> int:
+	var total := 0
+	for v in carry.values():
+		total += v
+	return total
+
+func _travel_to_storage(delta: float) -> void:
+	target_storage = _get_storage()
+	if target_storage == null:
+		state = WorkState.IDLE
+		return
+	if _move_toward(target_storage.global_position, delta):
+		state = WorkState.DEPOSIT
+		return
+	_check_stuck(WorkState.FIND_WORK)
+
+func _deposit() -> void:
+	var storage: Node2D = _get_storage()
+	if storage == null:
+		state = WorkState.IDLE
+		return
+	for id in carry.keys():
+		var amount: int = carry[id]
+		var accepted := EconomyManager.deposit(id, amount)
+		if accepted > 0:
+			carry[id] = amount - accepted
+		if carry[id] <= 0:
+			carry.erase(id)
+	if carry.is_empty():
+		state = WorkState.FIND_WORK
+
+func _check_stuck(fallback_state: WorkState) -> void:
+	if global_position.distance_to(_last_position) < 1.0:
+		_stuck_frames += 1
+	else:
+		_stuck_frames = 0
+	_last_position = global_position
+	if _stuck_frames >= stuck_frames_limit:
+		_stuck_frames = 0
+		work_target = null
+		state = fallback_state
+
+## ---------- 无职业居民漫游 ----------
+
 func _wander(delta: float) -> void:
 	if _try_auto_convert():
 		return
@@ -107,7 +208,7 @@ func _wander(delta: float) -> void:
 	else:
 		_stuck_frames = 0
 	_last_position = global_position
-	if _stuck_frames >= 30:
+	if _stuck_frames >= stuck_frames_limit:
 		_stuck_frames = 0
 		_pick_wander_target()
 
@@ -117,60 +218,7 @@ func _pick_wander_target() -> void:
 	wander_target = home_position + Vector2.from_angle(angle) * radius
 	wander_timer = 0.0
 
-func _find_tree() -> void:
-	target_tree = _nearest_available_tree()
-	if target_tree != null:
-		state = WorkState.TRAVEL_TO_TREE
-	else:
-		state = WorkState.IDLE
-
-func _nearest_available_tree() -> ResourceNode:
-	var best: ResourceNode = null
-	var best_dist := INF
-	for node in get_tree().get_nodes_in_group("resources"):
-		var tree := node as ResourceNode
-		if tree == null or tree.is_depleted:
-			continue
-		if tree.reserved_by != -1 and tree.reserved_by != villager_id:
-			continue
-		var d := global_position.distance_to(tree.global_position)
-		if d < best_dist:
-			best_dist = d
-			best = tree
-	return best
-
-func _travel_to_tree(delta: float) -> void:
-	if target_tree == null or not is_instance_valid(target_tree):
-		state = WorkState.FIND_TREE
-		return
-	if not target_tree.try_reserve(villager_id):
-		state = WorkState.FIND_TREE
-		return
-	if _move_toward(target_tree.global_position, delta):
-		chop_timer = 0.0
-		state = WorkState.CHOPPING
-
-func _chop(delta: float) -> void:
-	if target_tree == null or not is_instance_valid(target_tree) or target_tree.is_depleted:
-		state = WorkState.PICKUP
-		return
-	chop_timer += delta
-	if chop_timer >= chop_interval:
-		chop_timer = 0.0
-		target_tree.chop(villager_id, target_tree.data.chop_damage)
-		if target_tree.is_depleted:
-			state = WorkState.PICKUP
-
-func _pickup(delta: float) -> void:
-	target_pickup = _nearest_pickup()
-	if target_pickup == null:
-		state = WorkState.FIND_TREE
-		return
-	if _move_toward(target_pickup.global_position, delta):
-		var got := target_pickup.take()
-		if not got.is_empty():
-			carry[got["resource_id"]] = carry.get(got["resource_id"], 0) + got["amount"]
-		state = WorkState.TRAVEL_TO_STORAGE
+## ---------- 工具 ----------
 
 func _nearest_pickup() -> Pickup:
 	var best: Pickup = null
@@ -184,29 +232,6 @@ func _nearest_pickup() -> Pickup:
 			best_dist = d
 			best = p
 	return best
-
-func _travel_to_storage(delta: float) -> void:
-	target_storage = _get_storage()
-	if target_storage == null:
-		state = WorkState.IDLE
-		return
-	if _move_toward(target_storage.global_position, delta):
-		state = WorkState.DEPOSIT
-
-func _deposit() -> void:
-	var storage: Node2D = _get_storage()
-	if storage == null:
-		state = WorkState.IDLE
-		return
-	for id in carry.keys():
-		var amount: int = carry[id]
-		var accepted := EconomyManager.deposit(id, amount)
-		if accepted > 0:
-			carry[id] = amount - accepted
-		if carry[id] <= 0:
-			carry.erase(id)
-	if carry.is_empty():
-		state = WorkState.FIND_TREE
 
 func _get_storage() -> Node2D:
 	var storage := _nearest_in_group("storage_buildings")

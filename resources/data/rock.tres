@@ -11,4 +11,4 @@ chop_damage = 1
 drop_resource = "stone"
 drop_amount = 1
 respawn_days = 3
-required_job = "woodcutter"
+required_job = "miner"
