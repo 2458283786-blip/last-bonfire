@@ -1,7 +1,7 @@
 extends Node
 ## 游戏天数管理：推进天数，供资源重生/野外生成等系统使用。
 ## 昼夜阶段：白天 → 黄昏 → 夜晚 → 白天（自动按秒推进）。
-## 调试：F7 推进一天，F8 推进一个阶段。
+## 调试：F9 推进一天，F10 推进一个阶段（避开编辑器的 F5-F8 运行控制快捷键）。
 
 signal day_changed(day: int)
 signal phase_changed(phase: int)
@@ -37,9 +37,9 @@ func _process(delta: float) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo:
-		if event.keycode == KEY_F7:
+		if event.keycode == KEY_F9:
 			advance_day()
 			print("[DayManager] 天数推进到第 %d 天" % day)
-		elif event.keycode == KEY_F8:
+		elif event.keycode == KEY_F10:
 			advance_phase()
 			print("[DayManager] 阶段推进到 %s" % TimePhase.keys()[phase])
