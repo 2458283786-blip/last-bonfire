@@ -44,6 +44,7 @@ const TEST_SCRIPTS := [
 	"res://tests/test_toast_queue.gd",
 	"res://tests/test_interact_hint.gd",
 	"res://tests/test_night_overlay.gd",
+	"res://tests/test_villager_panel.gd",
 ]
 const INPUT_ACTIONS := ["move_left", "move_right", "jump", "attack", "bow"]
 

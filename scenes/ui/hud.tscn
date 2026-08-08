@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/hud.gd" id="1_hud"]
 [ext_resource type="PackedScene" path="res://scenes/ui/top_bar.tscn" id="2_top"]
@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/toast_queue.tscn" id="5_toast"]
 [ext_resource type="PackedScene" path="res://scenes/ui/interact_hint.tscn" id="6_hint"]
 [ext_resource type="PackedScene" path="res://scenes/ui/night_overlay.tscn" id="7_overlay"]
+[ext_resource type="PackedScene" path="res://scenes/ui/villager_panel.tscn" id="8_vpanel"]
 
 [node name="HUD" type="CanvasLayer"]
 process_mode = 3
@@ -24,3 +25,5 @@ entry_paths = Array[String](["res://resources/data/buildings/storage.tres", "res
 [node name="InteractHint" parent="." instance=ExtResource("6_hint")]
 
 [node name="NightOverlay" parent="." instance=ExtResource("7_overlay")]
+
+[node name="VillagerPanel" parent="." instance=ExtResource("8_vpanel")]

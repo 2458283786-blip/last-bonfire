@@ -7,6 +7,7 @@ extends CanvasLayer
 @onready var toast_queue: VBoxContainer = $ToastQueue
 @onready var interact_hint: Label = $InteractHint
 @onready var night_overlay: Control = $NightOverlay
+@onready var villager_panel: PanelContainer = $VillagerPanel
 
 var _selector: BuildingSelector = null
 
@@ -15,6 +16,7 @@ func _ready() -> void:
 	top_bar.open_villager_panel.connect(_toggle_villager_panel)
 	build_menu.building_selected.connect(_on_building_selected)
 	building_panel.close_requested.connect(func() -> void: building_panel.visible = false)
+	villager_panel.close_requested.connect(func() -> void: villager_panel.visible = false)
 	_selector = BuildingSelector.new()
 	get_tree().current_scene.add_child(_selector)
 	_selector.building_selected.connect(_on_building_clicked)
@@ -30,6 +32,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if event.is_action_pressed("build_menu"):
 		_toggle_build_menu()
+	elif event.is_action_pressed("villager_panel"):
+		_toggle_villager_panel()
 	elif event.is_action_pressed("interact"):
 		_try_interact()
 
@@ -37,7 +41,10 @@ func _toggle_build_menu() -> void:
 	build_menu.visible = not build_menu.visible
 
 func _toggle_villager_panel() -> void:
-	pass  # Task 8 实现
+	if villager_panel.visible:
+		villager_panel.visible = false
+	else:
+		villager_panel.open_panel()
 
 func _on_building_selected(data: BuildingData) -> void:
 	build_menu.visible = false
