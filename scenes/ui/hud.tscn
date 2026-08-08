@@ -1,9 +1,12 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/hud.gd" id="1_hud"]
 [ext_resource type="PackedScene" path="res://scenes/ui/top_bar.tscn" id="2_top"]
 [ext_resource type="PackedScene" path="res://scenes/ui/build_menu.tscn" id="3_build"]
 [ext_resource type="PackedScene" path="res://scenes/ui/building_panel.tscn" id="4_bpanel"]
+[ext_resource type="PackedScene" path="res://scenes/ui/toast_queue.tscn" id="5_toast"]
+[ext_resource type="PackedScene" path="res://scenes/ui/interact_hint.tscn" id="6_hint"]
+[ext_resource type="PackedScene" path="res://scenes/ui/night_overlay.tscn" id="7_overlay"]
 
 [node name="HUD" type="CanvasLayer"]
 process_mode = 3
@@ -15,3 +18,9 @@ script = ExtResource("1_hud")
 entry_paths = Array[String](["res://resources/data/buildings/storage.tres", "res://resources/data/buildings/woodcutter_hut.tres", "res://resources/data/buildings/lumber_camp.tres"])
 
 [node name="BuildingPanel" parent="." instance=ExtResource("4_bpanel")]
+
+[node name="ToastQueue" parent="." instance=ExtResource("5_toast")]
+
+[node name="InteractHint" parent="." instance=ExtResource("6_hint")]
+
+[node name="NightOverlay" parent="." instance=ExtResource("7_overlay")]

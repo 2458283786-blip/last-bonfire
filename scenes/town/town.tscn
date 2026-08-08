@@ -12,6 +12,7 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="10_hud"]
 [ext_resource type="PackedScene" path="res://scenes/buildings/bonfire.tscn" id="11_bonfire"]
 [ext_resource type="PackedScene" path="res://scenes/enemies/night_wave_spawner.tscn" id="12_nightwave"]
+[ext_resource type="Script" path="res://scripts/ui/interactable.gd" id="13_interactable"]
 
 [sub_resource type="RectangleShape2D" id="Rect_ground"]
 size = Vector2(1920, 40)
@@ -474,8 +475,10 @@ position = Vector2(960, 900)
 position = Vector2(0, 16)
 shape = SubResource("Rect_ground")
 
-[node name="DungeonEntrance" type="Marker2D" parent="." unique_id=1931460743]
+[node name="DungeonEntrance" type="Node2D" parent="." unique_id=1931460743]
 position = Vector2(1500, 830)
+script = ExtResource("13_interactable")
+prompt = "按 E 进入地下通道（开发中）"
 
 [node name="DungeonEntranceLabel" type="Label" parent="." unique_id=1692251221]
 offset_left = 1370.0

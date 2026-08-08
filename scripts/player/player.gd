@@ -149,6 +149,7 @@ func _on_pickup_area_entered(area: Area2D) -> void:
 	var got := pickup.take()
 	if not got.is_empty():
 		EconomyManager.deposit(str(got["resource_id"]), int(got["amount"]))
+		EventBus.pickup_collected.emit(str(got["resource_id"]), int(got["amount"]))
 
 func try_shoot_bow() -> void:
 	if bow_cooldown_timer > 0.0:

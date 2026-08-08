@@ -33,3 +33,4 @@ func _spawn_wave() -> void:
 		if not spawn_offsets.is_empty():
 			offset = spawn_offsets[i % spawn_offsets.size()]
 		enemy.global_position = global_position + offset
+	EventBus.wave_spawned.emit(count)

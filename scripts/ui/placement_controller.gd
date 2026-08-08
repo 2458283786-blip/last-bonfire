@@ -92,4 +92,5 @@ func _confirm() -> void:
 	_ghost.queue_free()
 	_ghost = null
 	_active = false
+	EventBus.building_built.emit(data.id)
 	placement_confirmed.emit(data, pos)

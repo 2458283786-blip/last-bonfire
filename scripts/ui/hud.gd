@@ -4,6 +4,9 @@ extends CanvasLayer
 @onready var top_bar: PanelContainer = $TopBar
 @onready var build_menu: PanelContainer = $BuildMenu
 @onready var building_panel: PanelContainer = $BuildingPanel
+@onready var toast_queue: VBoxContainer = $ToastQueue
+@onready var interact_hint: Label = $InteractHint
+@onready var night_overlay: Control = $NightOverlay
 
 var _selector: BuildingSelector = null
 
@@ -15,12 +18,20 @@ func _ready() -> void:
 	_selector = BuildingSelector.new()
 	get_tree().current_scene.add_child(_selector)
 	_selector.building_selected.connect(_on_building_clicked)
+	EventBus.villager_injured.connect(func(id: String) -> void: toast_queue.push("居民受伤了（ID %s），将休养数日" % id))
+	EventBus.building_destroyed.connect(func(id: String) -> void: toast_queue.push("建筑被摧毁：" + id))
+	EventBus.building_built.connect(func(id: String) -> void: toast_queue.push("建筑建成：" + id))
+	EventBus.pickup_collected.connect(func(resource_id: String, amount: int) -> void: toast_queue.push("%s +%d" % [resource_name(resource_id), amount]))
+	EventBus.wave_spawned.connect(func(count: int) -> void: toast_queue.push("夜晚波次来袭（%d 只怪物）" % count))
+	EventBus.villager_converted.connect(func(display_name: String, job: String) -> void: toast_queue.push("%s 成为%s" % [display_name, "伐木工" if job == "woodcutter" else job]))
 
 func _unhandled_input(event: InputEvent) -> void:
 	if GameManager.is_placing:
 		return
 	if event.is_action_pressed("build_menu"):
 		_toggle_build_menu()
+	elif event.is_action_pressed("interact"):
+		_try_interact()
 
 func _toggle_build_menu() -> void:
 	build_menu.visible = not build_menu.visible
@@ -47,3 +58,25 @@ func _on_placement_canceled(controller: PlacementController) -> void:
 
 func _on_building_clicked(b: Building) -> void:
 	building_panel.show_building(b)
+
+func resource_name(id: String) -> String:
+	match id:
+		"wood": return "木头"
+		"stone": return "石头"
+		"gold": return "金币"
+		"monster_material": return "怪物材料"
+	return id
+
+func _try_interact() -> void:
+	var player := _get_player()
+	if player == null:
+		return
+	for node in get_tree().get_nodes_in_group("interactables"):
+		var ia := node as Interactable
+		if ia != null and ia.try_interact(player.global_position):
+			toast_queue.push(ia.prompt)
+			return
+
+func _get_player() -> Node2D:
+	var players := get_tree().get_nodes_in_group("players")
+	return players[0] as Node2D if not players.is_empty() else null

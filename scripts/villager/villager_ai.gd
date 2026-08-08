@@ -26,6 +26,8 @@ enum WorkState { IDLE, FIND_WORK, TRAVEL_TO_WORK, WORKING, PICKUP, TRAVEL_TO_STO
 @export var max_hp: float = 20.0
 ## 受伤后失去工作能力的天数
 @export var injured_days: int = 2
+## 居民显示名（UI 列表用，可在场景中配置）
+@export var display_name: String = "居民"
 
 var villager_id := 0
 var job := "idle"
@@ -78,6 +80,7 @@ func _injure() -> void:
 	current_job = null
 	work_target = null
 	state = WorkState.IDLE
+	EventBus.villager_injured.emit(str(villager_id))
 
 func _on_day_changed(_day: int) -> void:
 	if is_injured:
