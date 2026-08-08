@@ -16,6 +16,7 @@ const TEST_SCRIPTS := [
 	"res://tests/test_economy_manager.gd",
 	"res://tests/test_resource_node.gd",
 	"res://tests/test_pickup.gd",
+	"res://tests/test_villager_work_cycle.gd",
 ]
 const INPUT_ACTIONS := ["move_left", "move_right", "jump", "attack", "bow"]
 
@@ -37,11 +38,12 @@ func _run_all() -> void:
 			Input.action_release(action)
 		print("=== 运行测试: ", script_name)
 		var script_res: Resource = load(path)
-		if script_res == null:
-			push_error("[FAIL] 无法加载测试脚本: " + path)
+		var gd_script := script_res as GDScript
+		if gd_script == null or not gd_script.can_instantiate():
+			push_error("[FAIL] 无法加载或编译测试脚本: " + path)
 			code = 1
 			continue
-		var test: Node = (script_res as GDScript).new()
+		var test: Node = gd_script.new()
 		test.name = script_name
 		add_child(test)
 		var ok: bool = await test.finished

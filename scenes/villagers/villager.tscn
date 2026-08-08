@@ -1,0 +1,21 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/villager/villager_ai.gd" id="1_villager"]
+
+[sub_resource type="CapsuleShape2D" id="Capsule_villager"]
+radius = 9.0
+height = 40.0
+
+[node name="Villager" type="CharacterBody2D"]
+script = ExtResource("1_villager")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -4)
+shape = SubResource("Capsule_villager")
+
+[node name="Visual" type="ColorRect" parent="."]
+offset_left = -14.0
+offset_top = -20.0
+offset_right = 14.0
+offset_bottom = 12.0
+color = Color(0.45, 0.55, 0.8, 1)
