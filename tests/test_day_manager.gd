@@ -7,6 +7,7 @@ var assertions := 0
 var _done := false
 
 func _ready() -> void:
+	DayManager.reset()
 	get_tree().create_timer(20.0).timeout.connect(_on_timeout)
 	_run()
 
@@ -16,12 +17,10 @@ func _on_timeout() -> void:
 
 func _run() -> void:
 	await get_tree().process_frame
-	var scene: Node2D = (load("res://scenes/dungeon/level_forest.tscn") as PackedScene).instantiate()
-	add_child(scene)
-	await get_tree().physics_frame
-	check(scene.get_node_or_null("PlayerSpawn") != null, "关卡模板应有 PlayerSpawn 标记")
-	check(scene.get_node_or_null("EnemySpawn") != null, "关卡模板应有 EnemySpawn 标记")
-	check(scene.get_node_or_null("DungeonExit") != null, "关卡模板应有 DungeonExit 标记")
+	check(DayManager.day >= 1, "day 应从 1 开始")
+	var before := DayManager.day
+	DayManager.advance_day()
+	check(DayManager.day == before + 1, "advance_day 应 +1")
 	finish(failures.is_empty())
 
 func check(cond: bool, msg: String) -> void:

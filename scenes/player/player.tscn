@@ -1,42 +1,42 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene format=3 uid="uid://cx7gxcob0knys"]
 
-[ext_resource type="Script" path="res://scripts/player/player.gd" id="1_player"]
+[ext_resource type="Script" uid="uid://bjpskinussg0j" path="res://scripts/player/player.gd" id="1_player"]
 [ext_resource type="PackedScene" path="res://scenes/player/arrow.tscn" id="2_arrow"]
 
 [sub_resource type="CapsuleShape2D" id="Capsule_body"]
-radius = 10.0
 height = 48.0
 
 [sub_resource type="RectangleShape2D" id="Rect_hitbox"]
 size = Vector2(28, 20)
 
-[node name="Player" type="CharacterBody2D"]
+[node name="Player" type="CharacterBody2D" unique_id=1769593861]
 script = ExtResource("1_player")
 arrow_scene = ExtResource("2_arrow")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1200364822]
 position = Vector2(0, -4)
 shape = SubResource("Capsule_body")
 
-[node name="Sprite" type="AnimatedSprite2D" parent="."]
+[node name="Sprite" type="AnimatedSprite2D" parent="." unique_id=1643741225]
+texture_filter = 1
 position = Vector2(0, -4)
 scale = Vector2(4, 4)
-texture_filter = 1
 
-[node name="AttackHitbox" type="Area2D" parent="."]
+[node name="AttackHitbox" type="Area2D" parent="." unique_id=300168609]
 position = Vector2(20, -4)
 monitoring = false
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="AttackHitbox"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AttackHitbox" unique_id=927815871]
 shape = SubResource("Rect_hitbox")
 
-[node name="BowSpawn" type="Marker2D" parent="."]
+[node name="BowSpawn" type="Marker2D" parent="." unique_id=1593188657]
 position = Vector2(16, -10)
 
-[node name="Camera" type="Camera2D" parent="."]
+[node name="Camera" type="Camera2D" parent="." unique_id=2091417155]
+zoom = Vector2(1.55, 1.55)
+limit_left = 0
+limit_top = 0
+limit_right = 1920
+limit_bottom = 1080
 position_smoothing_enabled = true
 position_smoothing_speed = 8.0
-limit_left = 0
-limit_right = 1920
-limit_top = 0
-limit_bottom = 1080

@@ -1,4 +1,7 @@
-extends SceneTree
+extends Node2D
+## 测试运行器：按顺序在游戏模式下运行全部测试，退出码 0/1。
+## 用法：godot --headless --path . res://tests/run_all.tscn
+## 可选：--only test_name 只跑单个测试。
 
 const TEST_SCRIPTS := [
 	"res://tests/test_input_map.gd",
@@ -9,28 +12,37 @@ const TEST_SCRIPTS := [
 	"res://tests/test_player_bow.gd",
 	"res://tests/test_town_scene.gd",
 	"res://tests/test_dungeon_template.gd",
+	"res://tests/test_day_manager.gd",
+	"res://tests/test_economy_manager.gd",
 ]
+const INPUT_ACTIONS := ["move_left", "move_right", "jump", "attack", "bow"]
 
-func _initialize() -> void:
-	_run()
+var _only := ""
 
-func _run() -> void:
+func _ready() -> void:
+	for arg in OS.get_cmdline_user_args():
+		if arg.begins_with("--only="):
+			_only = arg.trim_prefix("--only=")
+	_run_all()
+
+func _run_all() -> void:
 	var code := 0
-	var godot_exe := OS.get_executable_path()
-	var project_dir := ProjectSettings.globalize_path("res://")
-	for script_path in TEST_SCRIPTS:
-		var output: Array = []
-		var args := PackedStringArray(["--headless", "--path", project_dir, "--script", script_path])
-		var exit_code := OS.execute(godot_exe, args, output, true)
-		if exit_code != 0:
-			print("=== FAIL: ", script_path)
-			for line in output:
-				print(line)
+	for path in TEST_SCRIPTS:
+		var script_name: String = path.get_file().get_basename()
+		if _only != "" and script_name != _only:
+			continue
+		for action in INPUT_ACTIONS:
+			Input.action_release(action)
+		print("=== 运行测试: ", script_name)
+		var test: Node = (load(path) as GDScript).new()
+		test.name = script_name
+		add_child(test)
+		var ok: bool = await test.finished
+		if not ok:
 			code = 1
-		else:
-			print("[PASS] ", script_path)
+		test.queue_free()
 	if code == 0:
 		print("[PASS] 全部测试通过")
 	else:
 		push_error("[FAIL] 存在失败的测试")
-	quit(code)
+	get_tree().quit(code)
