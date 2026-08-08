@@ -53,6 +53,11 @@ func _ready() -> void:
 	_last_position = global_position
 	hp = max_hp
 	DayManager.day_changed.connect(_on_day_changed)
+	TownRegistry.register_villager(self)
+
+func _exit_tree() -> void:
+	if is_instance_valid(TownRegistry):
+		TownRegistry.unregister_villager(self)
 
 ## 被怪物攻击：血量归零后进入受伤状态（非死亡），失去 N 日工作能力。
 func take_damage(amount: float) -> void:

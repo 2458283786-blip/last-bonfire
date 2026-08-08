@@ -11,6 +11,11 @@ var assigned: Array[Villager] = []
 func _ready() -> void:
 	super._ready()
 	add_to_group("job_huts")
+	TownRegistry.register_job_hut(self)
+
+func _exit_tree() -> void:
+	if is_instance_valid(TownRegistry):
+		TownRegistry.unregister_job_hut(self)
 
 func can_accept_villager(_v: Villager) -> bool:
 	return assigned.size() < job_slots
