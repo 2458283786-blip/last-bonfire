@@ -3,11 +3,18 @@ extends CanvasLayer
 
 @onready var top_bar: PanelContainer = $TopBar
 @onready var build_menu: PanelContainer = $BuildMenu
+@onready var building_panel: PanelContainer = $BuildingPanel
+
+var _selector: BuildingSelector = null
 
 func _ready() -> void:
 	top_bar.open_build_menu.connect(_toggle_build_menu)
 	top_bar.open_villager_panel.connect(_toggle_villager_panel)
 	build_menu.building_selected.connect(_on_building_selected)
+	building_panel.close_requested.connect(func() -> void: building_panel.visible = false)
+	_selector = BuildingSelector.new()
+	get_tree().current_scene.add_child(_selector)
+	_selector.building_selected.connect(_on_building_clicked)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if GameManager.is_placing:
@@ -37,3 +44,6 @@ func _on_placement_confirmed(_data: BuildingData, _pos: Vector2, controller: Pla
 func _on_placement_canceled(controller: PlacementController) -> void:
 	GameManager.set_placing(false)
 	controller.queue_free()
+
+func _on_building_clicked(b: Building) -> void:
+	building_panel.show_building(b)

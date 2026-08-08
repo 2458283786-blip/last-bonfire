@@ -10,3 +10,6 @@ func _ready() -> void:
 	super._ready()
 	add_to_group("storage_buildings")
 	EconomyManager.set_capacity(EconomyManager.capacity + capacity_boost)
+
+func _exit_tree() -> void:
+	EconomyManager.set_capacity(maxi(EconomyManager.capacity - capacity_boost, 0))

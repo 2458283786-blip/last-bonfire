@@ -40,6 +40,7 @@ const TEST_SCRIPTS := [
 	"res://tests/test_top_bar.gd",
 	"res://tests/test_build_menu.gd",
 	"res://tests/test_placement.gd",
+	"res://tests/test_building_panel.gd",
 ]
 const INPUT_ACTIONS := ["move_left", "move_right", "jump", "attack", "bow"]
 
