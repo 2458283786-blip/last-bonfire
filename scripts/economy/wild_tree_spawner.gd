@@ -11,6 +11,8 @@ extends Node2D
 @export var max_trees: int = 10
 ## 两棵树之间的最小间距，避免重叠
 @export var min_spacing: float = 64.0
+## 加载存档期间置 false，阻止即时补树（加载完由 SaveManager 恢复）
+var refill_enabled := true
 
 func _ready() -> void:
 	add_to_group("wild_spawners")
@@ -29,7 +31,7 @@ func count_available_wild() -> int:
 	return count
 
 func _refill() -> void:
-	if tree_scene == null:
+	if not refill_enabled or tree_scene == null:
 		return
 	var missing := max_trees - count_available_wild()
 	for i in missing:

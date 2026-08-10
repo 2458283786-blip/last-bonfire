@@ -60,12 +60,14 @@ func _collect() -> Dictionary:
 		"economy": EconomyManager.collect_state(),
 		"player": _collect_player(),
 		"buildings": _collect_buildings(),
+		"resources": _collect_resources(),
 	}
 
 func _apply(data: Dictionary) -> void:
 	await _clear_world()
 	DayManager.restore_state(data.get("day", {}))
 	_apply_buildings(data.get("buildings", []))
+	_apply_resources(data.get("resources", []))
 	_apply_player(data.get("player", {}))
 	EconomyManager.restore(data.get("economy", {}))
 	for s in get_tree().get_nodes_in_group("wild_spawners"):
@@ -110,6 +112,36 @@ func _apply_buildings(data: Array) -> void:
 		b.is_destroyed = bool(entry.get("is_destroyed", false))
 		b.level = int(entry.get("level", 1))
 		b._update_visual()
+
+func _collect_resources() -> Array:
+	var out: Array = []
+	for node in get_tree().get_nodes_in_group("resources"):
+		var r := node as ResourceNode
+		if r == null:
+			continue
+		out.append({
+			"scene_path": node.scene_file_path,
+			"position": [node.global_position.x, node.global_position.y],
+			"current_hp": r.current_hp,
+			"is_depleted": r.is_depleted,
+			"respawn_day": r.respawn_day,
+			"is_wild": r.is_wild,
+		})
+	return out
+
+func _apply_resources(data: Array) -> void:
+	for entry in data:
+		var scene := load(str(entry["scene_path"])) as PackedScene
+		if scene == null:
+			continue
+		var r := scene.instantiate() as ResourceNode
+		get_tree().current_scene.add_child(r)
+		r.global_position = Vector2(entry["position"][0], entry["position"][1])
+		r.current_hp = int(entry.get("current_hp", r.data.max_hp))
+		r.is_depleted = bool(entry.get("is_depleted", false))
+		r.respawn_day = int(entry.get("respawn_day", -1))
+		r.is_wild = bool(entry.get("is_wild", false))
+		r._update_visual()
 
 func _collect_player() -> Dictionary:
 	var players := get_tree().get_nodes_in_group("players")
