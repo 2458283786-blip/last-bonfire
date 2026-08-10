@@ -47,6 +47,7 @@ const TEST_SCRIPTS := [
 	"res://tests/test_villager_panel.gd",
 	"res://tests/test_pause_menu.gd",
 	"res://tests/test_build_flow.gd",
+	"res://tests/test_save_manager_core.gd",
 ]
 const INPUT_ACTIONS := ["move_left", "move_right", "jump", "attack", "bow"]
 
