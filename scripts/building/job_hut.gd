@@ -31,3 +31,9 @@ func assign_villager(v: Villager) -> void:
 ## 释放名额：居民受伤/被调离/建筑被毁时调用，避免残留引用。
 func release_villager(v: Villager) -> void:
 	assigned.erase(v)
+
+## 建筑被摧毁：释放全部名额，居民恢复空闲（由现有自动转职逻辑重新分配）。
+func _on_function_offline() -> void:
+	for v in assigned.duplicate():
+		release_villager(v)
+		v.set_job("idle")

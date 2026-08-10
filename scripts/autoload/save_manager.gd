@@ -121,6 +121,7 @@ func _apply_buildings(data: Array) -> void:
 		b.is_destroyed = bool(entry.get("is_destroyed", false))
 		b.level = int(entry.get("level", 1))
 		b._update_visual()
+		b.refresh_function_state()
 
 func _collect_resources() -> Array:
 	var out: Array = []
@@ -128,6 +129,8 @@ func _collect_resources() -> Array:
 		var r := node as ResourceNode
 		if r == null:
 			continue
+		if r.get_parent() is ResourceCamp:
+			continue  # 场内资源由资源建筑自动生成，不单独存档（避免读档重复）
 		out.append({
 			"scene_path": node.scene_file_path,
 			"position": [node.global_position.x, node.global_position.y],

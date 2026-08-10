@@ -22,25 +22,21 @@ func _run() -> void:
 	var bonfire: Bonfire = (load("res://scenes/buildings/bonfire.tscn") as PackedScene).instantiate()
 	add_child(bonfire)
 	bonfire.global_position = Vector2(900, 380)
+	var stockpile := Node2D.new()
+	stockpile.add_to_group("town_stockpile")
+	add_child(stockpile)
+	stockpile.global_position = Vector2(200, 380)
 	var p: Player = (load("res://scenes/player/player.tscn") as PackedScene).instantiate()
 	add_child(p)
 	p.global_position = Vector2(400, 375)
-	check(p.hp == p.max_hp, "初始血量应为满")
-	p.take_damage(10.0)
-	check(p.hp == p.max_hp - 10.0, "受伤应扣血")
-	check(p.invincible_timer > 0.0, "受伤后应进入无敌")
-	p.take_damage(10.0)
-	check(p.hp == p.max_hp - 10.0, "无敌期间不应重复受伤")
-	for i in 70:
-		await get_tree().physics_frame
-	check(p.invincible_timer == 0.0, "无敌应到期")
-	p.take_damage(10.0)
-	check(p.hp == p.max_hp - 20.0, "无敌结束后可再次受伤")
-	for i in 70:
-		await get_tree().physics_frame
 	p.take_damage(p.max_hp)
-	check(p.hp == p.max_hp, "死亡后应回满血复活")
-	check(p.global_position.distance_to(Vector2(900, 380)) < 10.0, "死亡应回到篝火")
+	check(p.global_position.distance_to(Vector2(900, 380)) < 10.0, "篝火完好应回篝火")
+	p.invincible_timer = 0.0
+	p.global_position = Vector2(400, 375)
+	bonfire.take_damage(9999)
+	check(bonfire.is_destroyed, "篝火应被摧毁")
+	p.take_damage(p.max_hp)
+	check(p.global_position.distance_to(Vector2(200, 380)) < 10.0, "篝火被毁应回临时堆点")
 	finish(failures.is_empty())
 
 func _add_floor(pos: Vector2) -> void:

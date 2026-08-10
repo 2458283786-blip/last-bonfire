@@ -8,6 +8,9 @@ signal day_phase_changed(phase: String)
 signal player_died
 signal building_damaged(building_id: String, hp: int)
 signal building_destroyed(building_id: String)
+signal building_repaired(building_id: String)
+signal bonfire_lost
+signal bonfire_restored
 signal villager_died(villager_id: String)
 signal gold_changed(amount: int)
 signal villager_injured(villager_id: String)

@@ -41,6 +41,9 @@ func _run() -> void:
 			check(b.hp == 70, "仓库血量应恢复")
 			restored = true
 	check(restored, "应在原位置恢复仓库")
+	for b in get_tree().get_nodes_in_group("buildings"):
+		b.queue_free()
+	await get_tree().process_frame
 	DirAccess.remove_absolute(SaveManager.save_path)
 	finish(failures.is_empty())
 

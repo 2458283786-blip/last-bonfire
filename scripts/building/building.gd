@@ -24,6 +24,7 @@ func _ready() -> void:
 
 func _on_destroyed(_building: Building) -> void:
 	EventBus.building_destroyed.emit(building_id)
+	_on_function_offline()
 
 func take_damage(amount: int) -> void:
 	if is_destroyed:
@@ -35,18 +36,37 @@ func take_damage(amount: int) -> void:
 		destroyed.emit(self)
 		_update_visual()
 
+## 建筑被摧毁：功能下线（子类覆盖实现具体联动）。
+func _on_function_offline() -> void:
+	pass
+
+## 建筑修复/重建：功能上线（子类覆盖实现具体联动）。
+func _on_function_online() -> void:
+	pass
+
+## 按当前状态同步一次功能开关（存档加载后调用；子类保证幂等）。
+func refresh_function_state() -> void:
+	if is_destroyed:
+		_on_function_offline()
+	else:
+		_on_function_online()
+
 ## 修复：恢复满血；已摧毁则重建。
 func repair() -> void:
 	is_destroyed = false
 	hp = max_hp
 	_update_visual()
 	damaged.emit(self, hp)
+	_on_function_online()
+	EventBus.building_repaired.emit(building_id)
 
 ## 重建：恢复满血并显示（后续由玩家建造操作调用）。
 func rebuild() -> void:
 	is_destroyed = false
 	hp = max_hp
 	_update_visual()
+	_on_function_online()
+	EventBus.building_repaired.emit(building_id)
 
 func _update_visual() -> void:
 	visible = not is_destroyed

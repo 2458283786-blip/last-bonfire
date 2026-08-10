@@ -93,11 +93,29 @@ func _die() -> void:
 	is_dead = true
 	hp = max_hp
 	invincible_timer = invincible_time
-	var bonfire := _nearest_in_group("bonfires")
+	var bonfire := _nearest_bonfire()
 	if bonfire != null:
-		global_position = (bonfire as Node2D).global_position
+		global_position = bonfire.global_position
+	else:
+		var stockpile := _nearest_in_group("town_stockpile")
+		if stockpile != null:
+			global_position = (stockpile as Node2D).global_position
 	is_dead = false
 	EventBus.player_died.emit()
+
+## 找最近的未摧毁篝火（篝火在 core_buildings 组，不在 bonfires 组）。
+func _nearest_bonfire() -> Bonfire:
+	var best: Bonfire = null
+	var best_dist := INF
+	for node in get_tree().get_nodes_in_group("core_buildings"):
+		var b := node as Bonfire
+		if b == null or b.is_destroyed:
+			continue
+		var d := global_position.distance_to(b.global_position)
+		if d < best_dist:
+			best_dist = d
+			best = b
+	return best
 
 func _nearest_in_group(group: String) -> Node2D:
 	var best: Node2D = null

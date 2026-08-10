@@ -5,3 +5,9 @@ extends Building
 func _ready() -> void:
 	super._ready()
 	add_to_group("core_buildings")
+
+func _on_function_offline() -> void:
+	EventBus.bonfire_lost.emit()
+
+func _on_function_online() -> void:
+	EventBus.bonfire_restored.emit()
