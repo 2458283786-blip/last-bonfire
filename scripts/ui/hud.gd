@@ -22,7 +22,8 @@ func _ready() -> void:
 	villager_panel.close_requested.connect(func() -> void: villager_panel.visible = false)
 	pause_menu.resume_requested.connect(_toggle_pause)
 	pause_menu.settings_requested.connect(func() -> void: toast_queue.push("设置功能开发中"))
-	pause_menu.save_requested.connect(func() -> void: toast_queue.push("存档功能预留中"))
+	pause_menu.save_requested.connect(_on_save_requested)
+	pause_menu.load_requested.connect(_on_load_requested)
 	pause_menu.exit_requested.connect(func() -> void: GameManager.change_scene("res://scenes/main/boot.tscn"))
 	top_bar.open_backpack.connect(_toggle_backpack)
 	call_deferred("_spawn_selector")
@@ -76,6 +77,16 @@ func _toggle_backpack() -> void:
 		backpack_panel.visible = false
 	else:
 		backpack_panel.open_panel()
+
+func _on_save_requested() -> void:
+	if SaveManager.save_game():
+		toast_queue.push("已存档")
+	else:
+		toast_queue.push("存档失败：" + SaveManager.last_error)
+
+func _on_load_requested() -> void:
+	GameManager.pending_load = true
+	GameManager.change_scene("res://scenes/town/town.tscn")
 
 func _on_building_selected(data: BuildingData) -> void:
 	build_menu.visible = false

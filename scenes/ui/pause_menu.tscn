@@ -33,7 +33,10 @@ text = "继续"
 text = "设置（开发中）"
 
 [node name="SaveButton" type="Button" parent="VBox"]
-text = "存档（预留）"
+text = "存档"
+
+[node name="LoadButton" type="Button" parent="VBox"]
+text = "读档"
 
 [node name="ExitButton" type="Button" parent="VBox"]
 text = "返回标题"

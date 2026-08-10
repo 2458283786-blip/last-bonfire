@@ -10,6 +10,13 @@ const SAVE_VERSION := 1
 var save_path := "user://save_game.json"
 var last_error := ""
 
+func _ready() -> void:
+	DayManager.day_changed.connect(_on_day_changed)
+
+func _on_day_changed(_day: int) -> void:
+	if get_tree().current_scene != null and get_tree().current_scene.name == "Town":
+		save_game()
+
 func has_save() -> bool:
 	return FileAccess.file_exists(save_path)
 

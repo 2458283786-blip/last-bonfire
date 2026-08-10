@@ -31,3 +31,18 @@ theme_override_font_sizes/font_size = 28
 text = "开发框架预览 — 按 Enter 进入城镇场景"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="ContinueButton" type="Button" parent="."]
+visible = false
+offset_left = 610.0
+offset_top = 660.0
+offset_right = 910.0
+offset_bottom = 710.0
+text = "继续游戏"
+
+[node name="NewGameButton" type="Button" parent="."]
+offset_left = 1010.0
+offset_top = 660.0
+offset_right = 1310.0
+offset_bottom = 710.0
+text = "新游戏"

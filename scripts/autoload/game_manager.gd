@@ -5,6 +5,8 @@ extends Node
 var is_paused: bool = false
 ## 是否处于建筑放置模式（放置时屏蔽玩家移动/战斗输入）
 var is_placing := false
+## 进入城镇后自动读档（boot"继续游戏"与暂停菜单"读档"置 true）
+var pending_load := false
 
 func set_placing(v: bool) -> void:
 	is_placing = v

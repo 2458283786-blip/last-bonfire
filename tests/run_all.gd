@@ -52,6 +52,7 @@ const TEST_SCRIPTS := [
 	"res://tests/test_save_buildings.gd",
 	"res://tests/test_save_resources.gd",
 	"res://tests/test_save_villagers.gd",
+	"res://tests/test_save_flow.gd",
 ]
 const INPUT_ACTIONS := ["move_left", "move_right", "jump", "attack", "bow"]
 

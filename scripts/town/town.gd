@@ -4,4 +4,7 @@ extends Node2D
 ## 地图在场景内用 TileMap / 手绘节点搭建（主场景内绘制）。
 
 func _ready() -> void:
-	print("[Town] 城镇场景已加载（占位）。")
+	print("[Town] 城镇场景已加载。")
+	if GameManager.pending_load:
+		GameManager.pending_load = false
+		SaveManager.load_game()
