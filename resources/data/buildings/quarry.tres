@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="BuildingData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/building/building_data.gd" id="1_data"]
+[ext_resource type="PackedScene" path="res://scenes/buildings/quarry.tscn" id="2_scene"]
+
+[resource]
+script = ExtResource("1_data")
+id = "quarry"
+display_name = "采石场"
+description = "在周围生成城内石头，供矿工挖掘（资源生成建筑）。"
+cost = {"wood": 25}
+icon_color = Color(0.38, 0.38, 0.42, 1)
+scene = ExtResource("2_scene")
+footprint_half_width = 48.0
+upgrade_cost = {"wood": 30}
+upgrade_effect = "城内石头 +3"

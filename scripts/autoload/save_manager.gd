@@ -188,15 +188,20 @@ func _apply_villagers(data: Array) -> void:
 		v.is_injured = bool(entry.get("is_injured", false))
 		v.injured_remaining_days = int(entry.get("injured_remaining_days", 0))
 		v.set_job(str(entry.get("job", "idle")))
-	_assign_woodcutters()
+	_assign_job_villagers()
 
-func _assign_woodcutters() -> void:
+## 读档后把有职业的居民重新分配回对应职业小屋（job_name 匹配 + 名额允许）。
+func _assign_job_villagers() -> void:
 	for node in get_tree().get_nodes_in_group("villagers"):
 		var v := node as Villager
-		if v == null or v.job != "woodcutter":
+		if v == null or v.job == "idle":
 			continue
 		for hut in TownRegistry.get_job_huts():
-			if hut.has_method("can_accept_villager") and hut.can_accept_villager(v):
+			if not hut.has_method("can_accept_villager"):
+				continue
+			if hut.get("job_name") != v.job:
+				continue
+			if hut.can_accept_villager(v):
 				hut.assign_villager(v)
 				break
 

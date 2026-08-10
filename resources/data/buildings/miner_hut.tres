@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="BuildingData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/building/building_data.gd" id="1_data"]
+[ext_resource type="PackedScene" path="res://scenes/buildings/miner_hut.tscn" id="2_scene"]
+
+[resource]
+script = ExtResource("1_data")
+id = "miner_hut"
+display_name = "矿工小屋"
+description = "把空闲居民转职为矿工（职业转换建筑，不产资源）。"
+cost = {"wood": 15}
+icon_color = Color(0.45, 0.45, 0.5, 1)
+scene = ExtResource("2_scene")
+footprint_half_width = 48.0
+upgrade_cost = {"wood": 20}
+upgrade_effect = "矿工名额 +1"

@@ -32,7 +32,7 @@ func refresh() -> void:
 		child.queue_free()
 	for v in TownRegistry.get_villagers():
 		var btn := Button.new()
-		btn.text = "%s · %s · %s" % [v.display_name, "伐木工" if v.job == "woodcutter" else "空闲", _status_text(v)]
+		btn.text = "%s · %s · %s" % [v.display_name, TownRegistry.job_display_name(v.job), _status_text(v)]
 		btn.pressed.connect(_on_villager_pressed.bind(v))
 		villager_list.add_child(btn)
 	if _selected == null or not is_instance_valid(_selected):

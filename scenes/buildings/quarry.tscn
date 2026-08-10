@@ -1,0 +1,25 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/building/quarry.gd" id="1_quarry"]
+[ext_resource type="PackedScene" path="res://scenes/resources/rock.tscn" id="2_rock"]
+
+[node name="Quarry" type="Node2D"]
+script = ExtResource("1_quarry")
+resource_scene = ExtResource("2_rock")
+building_id = "quarry"
+display_name = "采石场"
+
+[node name="Visual" type="ColorRect" parent="."]
+offset_left = -32.0
+offset_top = -24.0
+offset_right = 32.0
+offset_bottom = 24.0
+color = Color(0.38, 0.38, 0.42, 1)
+
+[node name="Label" type="Label" parent="."]
+offset_left = -40.0
+offset_top = -52.0
+offset_right = 40.0
+offset_bottom = -32.0
+text = "采石场"
+horizontal_alignment = 1

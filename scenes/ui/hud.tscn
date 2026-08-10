@@ -18,7 +18,7 @@ script = ExtResource("1_hud")
 [node name="TopBar" parent="." instance=ExtResource("2_top")]
 
 [node name="BuildMenu" parent="." instance=ExtResource("3_build")]
-entry_paths = Array[String](["res://resources/data/buildings/storage.tres", "res://resources/data/buildings/woodcutter_hut.tres", "res://resources/data/buildings/lumber_camp.tres"])
+entry_paths = Array[String](["res://resources/data/buildings/storage.tres", "res://resources/data/buildings/woodcutter_hut.tres", "res://resources/data/buildings/lumber_camp.tres", "res://resources/data/buildings/miner_hut.tres", "res://resources/data/buildings/quarry.tres"])
 
 [node name="BuildingPanel" parent="." instance=ExtResource("4_bpanel")]
 

@@ -6,9 +6,19 @@ signal villager_registered(villager: Villager)
 signal villager_unregistered(villager: Villager)
 signal daily_adjustments_reset
 
+const JOB_DISPLAY_NAMES := {
+	"idle": "空闲",
+	"woodcutter": "伐木工",
+	"miner": "矿工",
+}
+
 var _villagers: Array[Villager] = []
 var _job_huts: Array[Node] = []
 var _adjusted_today: Dictionary = {}
+
+## 职业显示名统一入口：新职业只改这里，UI 不再各自硬编码。
+static func job_display_name(job: String) -> String:
+	return JOB_DISPLAY_NAMES.get(job, job)
 
 func _ready() -> void:
 	DayManager.day_changed.connect(_on_day_changed)

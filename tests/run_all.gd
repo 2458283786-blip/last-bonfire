@@ -28,6 +28,9 @@ const TEST_SCRIPTS := [
 	"res://tests/test_villager_carry_capacity.gd",
 	"res://tests/test_villager_stuck_wall.gd",
 	"res://tests/test_woodcutter_hut_release.gd",
+	"res://tests/test_miner_job.gd",
+	"res://tests/test_miner_hut.gd",
+	"res://tests/test_quarry.gd",
 	"res://tests/test_enemy.gd",
 	"res://tests/test_enemy_ai.gd",
 	"res://tests/test_player_hp.gd",
@@ -52,6 +55,7 @@ const TEST_SCRIPTS := [
 	"res://tests/test_save_buildings.gd",
 	"res://tests/test_save_resources.gd",
 	"res://tests/test_save_villagers.gd",
+	"res://tests/test_save_miner.gd",
 	"res://tests/test_save_flow.gd",
 ]
 const INPUT_ACTIONS := ["move_left", "move_right", "jump", "attack", "bow"]

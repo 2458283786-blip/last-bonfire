@@ -32,7 +32,7 @@ func _ready() -> void:
 	EventBus.building_built.connect(func(id: String) -> void: toast_queue.push("建筑建成：" + id))
 	EventBus.pickup_collected.connect(func(resource_id: String, amount: int) -> void: toast_queue.push("%s +%d" % [resource_name(resource_id), amount]))
 	EventBus.wave_spawned.connect(func(count: int) -> void: toast_queue.push("夜晚波次来袭（%d 只怪物）" % count))
-	EventBus.villager_converted.connect(func(display_name: String, job: String) -> void: toast_queue.push("%s 成为%s" % [display_name, "伐木工" if job == "woodcutter" else job]))
+	EventBus.villager_converted.connect(func(display_name: String, job: String) -> void: toast_queue.push("%s 成为%s" % [display_name, TownRegistry.job_display_name(job)]))
 
 func _spawn_selector() -> void:
 	if _selector != null:

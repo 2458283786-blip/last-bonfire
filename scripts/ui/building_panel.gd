@@ -41,8 +41,8 @@ func _refresh() -> void:
 	repair_button.text = "重建" if _building.is_destroyed else "修复"
 
 func _slots_text() -> String:
-	if _building.get("job_slots") != null:
-		return "伐木工 %d/%d" % [_building.job_slots - _building.assigned.size(), _building.job_slots]
+	if _building.get("job_slots") != null and _building.get("job_name") != null:
+		return "%s %d/%d" % [TownRegistry.job_display_name(_building.job_name), _building.job_slots - _building.assigned.size(), _building.job_slots]
 	return "—"
 
 func _assigned_text() -> String:

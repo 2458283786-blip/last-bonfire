@@ -101,6 +101,8 @@ func _create_job(job_name: String) -> RefCounted:
 	match job_name:
 		"woodcutter":
 			return WoodcutterJob.new()
+		"miner":
+			return MinerJob.new()
 	return null
 
 func _physics_process(delta: float) -> void:

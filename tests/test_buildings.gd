@@ -47,7 +47,7 @@ func _run() -> void:
 	for child in camp.get_children():
 		if child is ResourceNode:
 			tree_count += 1
-	check(tree_count == camp.tree_count, "伐木场应生成固定数量的树")
+	check(tree_count == camp.resource_count, "伐木场应生成固定数量的树")
 	finish(failures.is_empty())
 
 func check(cond: bool, msg: String) -> void:
