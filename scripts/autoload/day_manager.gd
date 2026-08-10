@@ -44,5 +44,18 @@ func _unhandled_input(event: InputEvent) -> void:
 			advance_phase()
 			print("[DayManager] 阶段推进到 %s" % TimePhase.keys()[phase])
 
+## ---- 存档支持：快照与静默恢复（不发射信号，避免加载中间态副作用） ----
+
+func phase_elapsed() -> float:
+	return _phase_timer
+
+func collect_state() -> Dictionary:
+	return {"day": day, "phase": phase, "phase_elapsed": _phase_timer}
+
+func restore_state(data: Dictionary) -> void:
+	day = maxi(int(data.get("day", 1)), 1)
+	phase = int(data.get("phase", 0)) % PHASE_COUNT
+	_phase_timer = maxf(float(data.get("phase_elapsed", 0.0)), 0.0)
+
 func phase_remaining() -> float:
 	return maxf(phase_length_seconds - _phase_timer, 0.0)

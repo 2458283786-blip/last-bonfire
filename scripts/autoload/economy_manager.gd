@@ -60,3 +60,13 @@ func set_capacity(new_capacity: int) -> void:
 
 func emit_changed(resource_id: String, amount: int) -> void:
 	stock_changed.emit(resource_id, amount)
+
+## ---- 存档支持 ----
+
+func collect_state() -> Dictionary:
+	return {"stock": stock.duplicate(), "capacity": capacity}
+
+func restore(data: Dictionary) -> void:
+	stock = (data.get("stock", {}) as Dictionary).duplicate()
+	capacity = maxi(int(data.get("capacity", DEFAULT_CAPACITY)), 0)
+	emit_changed("", 0)

@@ -55,7 +55,33 @@ func migrate(data: Dictionary) -> Dictionary:
 	return data
 
 func _collect() -> Dictionary:
-	return {}
+	return {
+		"day": DayManager.collect_state(),
+		"economy": EconomyManager.collect_state(),
+		"player": _collect_player(),
+	}
 
-func _apply(_data: Dictionary) -> void:
-	pass
+func _apply(data: Dictionary) -> void:
+	DayManager.restore_state(data.get("day", {}))
+	_apply_player(data.get("player", {}))
+	EconomyManager.restore(data.get("economy", {}))
+
+func _collect_player() -> Dictionary:
+	var players := get_tree().get_nodes_in_group("players")
+	if players.is_empty():
+		return {}
+	var p := players[0]
+	return {
+		"position": [p.global_position.x, p.global_position.y],
+		"hp": p.hp,
+	}
+
+func _apply_player(data: Dictionary) -> void:
+	if data.is_empty():
+		return
+	var players := get_tree().get_nodes_in_group("players")
+	if players.is_empty():
+		return
+	var p := players[0]
+	p.global_position = Vector2(data["position"][0], data["position"][1])
+	p.hp = clampf(float(data.get("hp", p.max_hp)), 1.0, p.max_hp)
