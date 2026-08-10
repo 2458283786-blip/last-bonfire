@@ -59,12 +59,57 @@ func _collect() -> Dictionary:
 		"day": DayManager.collect_state(),
 		"economy": EconomyManager.collect_state(),
 		"player": _collect_player(),
+		"buildings": _collect_buildings(),
 	}
 
 func _apply(data: Dictionary) -> void:
+	await _clear_world()
 	DayManager.restore_state(data.get("day", {}))
+	_apply_buildings(data.get("buildings", []))
 	_apply_player(data.get("player", {}))
 	EconomyManager.restore(data.get("economy", {}))
+	for s in get_tree().get_nodes_in_group("wild_spawners"):
+		s.refill_enabled = true
+	TownRegistry.reset_daily_adjustments()
+
+func _clear_world() -> void:
+	for node in get_tree().get_nodes_in_group("buildings"):
+		node.queue_free()
+	for node in get_tree().get_nodes_in_group("resources"):
+		node.queue_free()
+	for node in get_tree().get_nodes_in_group("villagers"):
+		node.queue_free()
+	for s in get_tree().get_nodes_in_group("wild_spawners"):
+		s.refill_enabled = false
+	await get_tree().process_frame
+
+func _collect_buildings() -> Array:
+	var out: Array = []
+	for node in get_tree().get_nodes_in_group("buildings"):
+		var b := node as Building
+		if b == null:
+			continue
+		out.append({
+			"scene_path": node.scene_file_path,
+			"position": [node.global_position.x, node.global_position.y],
+			"hp": b.hp,
+			"is_destroyed": b.is_destroyed,
+			"level": b.level,
+		})
+	return out
+
+func _apply_buildings(data: Array) -> void:
+	for entry in data:
+		var scene := load(str(entry["scene_path"])) as PackedScene
+		if scene == null:
+			continue
+		var b := scene.instantiate() as Building
+		get_tree().current_scene.add_child(b)
+		b.global_position = Vector2(entry["position"][0], entry["position"][1])
+		b.hp = int(entry.get("hp", b.max_hp))
+		b.is_destroyed = bool(entry.get("is_destroyed", false))
+		b.level = int(entry.get("level", 1))
+		b._update_visual()
 
 func _collect_player() -> Dictionary:
 	var players := get_tree().get_nodes_in_group("players")

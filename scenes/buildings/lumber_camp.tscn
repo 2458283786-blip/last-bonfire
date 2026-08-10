@@ -6,6 +6,7 @@
 [node name="LumberCamp" type="Node2D"]
 script = ExtResource("1_camp")
 tree_scene = ExtResource("2_tree")
+building_id = "lumber_camp"
 display_name = "伐木场"
 
 [node name="Visual" type="ColorRect" parent="."]
