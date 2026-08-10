@@ -61,6 +61,7 @@ func _collect() -> Dictionary:
 		"player": _collect_player(),
 		"buildings": _collect_buildings(),
 		"resources": _collect_resources(),
+		"villagers": _collect_villagers(),
 	}
 
 func _apply(data: Dictionary) -> void:
@@ -68,6 +69,7 @@ func _apply(data: Dictionary) -> void:
 	DayManager.restore_state(data.get("day", {}))
 	_apply_buildings(data.get("buildings", []))
 	_apply_resources(data.get("resources", []))
+	_apply_villagers(data.get("villagers", []))
 	_apply_player(data.get("player", {}))
 	EconomyManager.restore(data.get("economy", {}))
 	for s in get_tree().get_nodes_in_group("wild_spawners"):
@@ -142,6 +144,54 @@ func _apply_resources(data: Array) -> void:
 		r.respawn_day = int(entry.get("respawn_day", -1))
 		r.is_wild = bool(entry.get("is_wild", false))
 		r._update_visual()
+
+func _collect_villagers() -> Array:
+	var out: Array = []
+	for node in get_tree().get_nodes_in_group("villagers"):
+		var v := node as Villager
+		if v == null:
+			continue
+		out.append({
+			"scene_path": node.scene_file_path,
+			"display_name": v.display_name,
+			"job": v.job,
+			"position": [node.global_position.x, node.global_position.y],
+			"home_position": [v.home_position.x, v.home_position.y],
+			"carry": v.carry.duplicate(),
+			"hp": v.hp,
+			"is_injured": v.is_injured,
+			"injured_remaining_days": v.injured_remaining_days,
+		})
+	return out
+
+func _apply_villagers(data: Array) -> void:
+	for entry in data:
+		var scene_path := str(entry.get("scene_path", "res://scenes/villagers/villager.tscn"))
+		var scene := load(scene_path) as PackedScene
+		if scene == null:
+			continue
+		var v := scene.instantiate() as Villager
+		get_tree().current_scene.add_child(v)
+		v.set_physics_process(false)
+		v.global_position = Vector2(entry["position"][0], entry["position"][1])
+		v.home_position = Vector2(entry["home_position"][0], entry["home_position"][1])
+		v.display_name = str(entry.get("display_name", "居民"))
+		v.carry = (entry.get("carry", {}) as Dictionary).duplicate()
+		v.hp = float(entry.get("hp", v.max_hp))
+		v.is_injured = bool(entry.get("is_injured", false))
+		v.injured_remaining_days = int(entry.get("injured_remaining_days", 0))
+		v.set_job(str(entry.get("job", "idle")))
+	_assign_woodcutters()
+
+func _assign_woodcutters() -> void:
+	for node in get_tree().get_nodes_in_group("villagers"):
+		var v := node as Villager
+		if v == null or v.job != "woodcutter":
+			continue
+		for hut in TownRegistry.get_job_huts():
+			if hut.has_method("can_accept_villager") and hut.can_accept_villager(v):
+				hut.assign_villager(v)
+				break
 
 func _collect_player() -> Dictionary:
 	var players := get_tree().get_nodes_in_group("players")
