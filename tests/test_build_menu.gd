@@ -34,6 +34,15 @@ func _run() -> void:
 	check(not btn.disabled, "资源充足时卡片应可点击")
 	EconomyManager.withdraw("wood", 10)
 	check(btn.disabled, "资源不足时卡片应置灰")
+	# 无手动条目时从建筑数据库构建（单一注册表）
+	var menu_db: PanelContainer = load("res://scenes/ui/build_menu.tscn").instantiate()
+	add_child(menu_db)
+	await get_tree().process_frame
+	check(menu_db.entries.size() == BuildingDatabase.all_data().size(), "菜单应从数据库构建全部建筑")
+	var db_cards: HBoxContainer = menu_db.get_node("HBox")
+	check(db_cards.get_child_count() == BuildingDatabase.all_data().size() - 1, "锁定蓝图（商店）应被过滤")
+	var first_btn := db_cards.get_child(0) as Button
+	check(first_btn.text.contains("仓库"), "菜单应按 build_menu_order 排序，第一张为仓库")
 	finish(failures.is_empty())
 
 func check(cond: bool, msg: String) -> void:

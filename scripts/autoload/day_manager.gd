@@ -13,11 +13,14 @@ var day := 1
 var phase := TimePhase.DAY
 var phase_length_seconds: float = 60.0
 var _phase_timer := 0.0
+## 当晚波次是否已触发（防止回城/读档重复刷怪；进入新一天重置）
+var wave_triggered_tonight := false
 
 func reset() -> void:
 	day = 1
 	phase = TimePhase.DAY
 	_phase_timer = 0.0
+	wave_triggered_tonight = false
 
 func advance_day() -> void:
 	day += 1
@@ -27,6 +30,7 @@ func advance_phase() -> void:
 	phase = (phase + 1) % PHASE_COUNT
 	phase_changed.emit(phase)
 	if phase == TimePhase.DAY:
+		wave_triggered_tonight = false
 		advance_day()
 
 func _process(delta: float) -> void:
@@ -50,12 +54,13 @@ func phase_elapsed() -> float:
 	return _phase_timer
 
 func collect_state() -> Dictionary:
-	return {"day": day, "phase": phase, "phase_elapsed": _phase_timer}
+	return {"day": day, "phase": phase, "phase_elapsed": _phase_timer, "wave_triggered": wave_triggered_tonight}
 
 func restore_state(data: Dictionary) -> void:
 	day = maxi(int(data.get("day", 1)), 1)
 	phase = int(data.get("phase", 0)) % PHASE_COUNT
 	_phase_timer = maxf(float(data.get("phase_elapsed", 0.0)), 0.0)
+	wave_triggered_tonight = bool(data.get("wave_triggered", false))
 
 func phase_remaining() -> float:
 	return maxf(phase_length_seconds - _phase_timer, 0.0)

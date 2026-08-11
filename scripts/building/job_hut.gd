@@ -7,6 +7,8 @@ extends Building
 @export var job_slots: int = 2
 ## 本建筑提供的职业（woodcutter / miner / ...）
 @export var job_name: String = "woodcutter"
+## 每升一级额外增加的名额
+@export var slots_per_level: int = 1
 
 var assigned: Array[Villager] = []
 
@@ -19,8 +21,11 @@ func _exit_tree() -> void:
 	if is_instance_valid(TownRegistry):
 		TownRegistry.unregister_job_hut(self)
 
+func effective_slots() -> int:
+	return job_slots + maxi(level - 1, 0) * slots_per_level
+
 func can_accept_villager(_v: Villager) -> bool:
-	return assigned.size() < job_slots
+	return assigned.size() < effective_slots()
 
 func assign_villager(v: Villager) -> void:
 	if can_accept_villager(v) and not assigned.has(v):

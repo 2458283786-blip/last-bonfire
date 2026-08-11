@@ -40,6 +40,10 @@ text = "已分配 —"
 disabled = true
 text = "升级（后续版本）"
 
+[node name="ShopButton" type="Button" parent="VBox"]
+visible = false
+text = "打开商店"
+
 [node name="RepairButton" type="Button" parent="VBox"]
 text = "修复"
 

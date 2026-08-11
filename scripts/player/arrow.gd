@@ -14,6 +14,7 @@ func setup(dir: Vector2, spd: float) -> void:
 	speed = spd
 
 func _ready() -> void:
+	collision_mask = PhysicsLayers.MASK_WORLD_ENEMY
 	body_entered.connect(_on_body_entered)
 
 func _physics_process(delta: float) -> void:

@@ -22,10 +22,26 @@ layout_mode = 2
 theme_override_constants/separation = 8
 
 [node name="Title" type="Label" parent="VBox"]
-text = "背包（装备系统随地下城开放）"
+text = "背包"
 
 [node name="GoldLabel" type="Label" parent="VBox"]
 text = "金币 0"
 
 [node name="MaterialLabel" type="Label" parent="VBox"]
 text = "怪物材料 0"
+
+[node name="MeleeLabel" type="Label" parent="VBox"]
+text = "近战：—"
+
+[node name="RangedLabel" type="Label" parent="VBox"]
+text = "远程：—"
+
+[node name="ArmorLabel" type="Label" parent="VBox"]
+text = "护甲：—"
+
+[node name="AccessoryLabel" type="Label" parent="VBox"]
+text = "饰品：—"
+
+[node name="ItemList" type="VBoxContainer" parent="VBox"]
+layout_mode = 2
+theme_override_constants/separation = 4

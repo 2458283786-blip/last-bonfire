@@ -13,9 +13,11 @@
 [ext_resource type="PackedScene" path="res://scenes/buildings/bonfire.tscn" id="11_bonfire"]
 [ext_resource type="PackedScene" path="res://scenes/enemies/night_wave_spawner.tscn" id="12_nightwave"]
 [ext_resource type="Script" uid="uid://cgrovq68oby8p" path="res://scripts/ui/interactable.gd" id="13_interactable"]
+[ext_resource type="PackedScene" path="res://scenes/buildings/house.tscn" id="14_house"]
+[ext_resource type="Script" path="res://scripts/dungeon/dungeon_entrance.gd" id="15_entrance"]
 
 [sub_resource type="RectangleShape2D" id="Rect_ground"]
-size = Vector2(1920, 40)
+size = Vector2(2220, 40)
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_8b7wv"]
 texture = ExtResource("3_e21v4")
@@ -470,7 +472,7 @@ mouse_filter = 2
 color = Color(0.16, 0.19, 0.25, 1)
 
 [node name="GroundBody" type="StaticBody2D" parent="." unique_id=2091051791]
-position = Vector2(960, 900)
+position = Vector2(1110, 900)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="GroundBody" unique_id=533399893]
 position = Vector2(0, 16)
@@ -478,8 +480,7 @@ shape = SubResource("Rect_ground")
 
 [node name="DungeonEntrance" type="Node2D" parent="." unique_id=1931460743]
 position = Vector2(1500, 830)
-script = ExtResource("13_interactable")
-prompt = "按 E 进入地下通道（开发中）"
+script = ExtResource("15_entrance")
 
 [node name="TownStockpile" type="Node2D" parent="." unique_id=1960491828]
 groups=["town_stockpile"]
@@ -496,8 +497,37 @@ horizontal_alignment = 1
 [node name="Bonfire" parent="." unique_id=1037892947 instance=ExtResource("11_bonfire")]
 position = Vector2(200, 830)
 
+[node name="House" parent="." unique_id=1171067302 instance=ExtResource("14_house")]
+position = Vector2(650, 862)
+
 [node name="NightWaveSpawner" parent="." unique_id=1120782141 instance=ExtResource("12_nightwave")]
-position = Vector2(960, 850)
+position = Vector2(2050, 880)
+spawn_band = Rect2(1940, 850, 240, 24)
+town_bounds = Rect2(50, 800, 1820, 120)
+march_point = Vector2(960, 870)
+warning_radius = 900.0
+
+[node name="OutsideVisual" type="ColorRect" parent="." unique_id=1171067303]
+offset_left = 1920.0
+offset_top = 880.0
+offset_right = 2220.0
+offset_bottom = 1080.0
+color = Color(0.12, 0.16, 0.1, 1)
+
+[node name="OutsideLabel" type="Label" parent="." unique_id=1171067304]
+offset_left = 1810.0
+offset_top = 60.0
+offset_right = 2010.0
+offset_bottom = 100.0
+text = "← 夜袭方向（城外）"
+horizontal_alignment = 1
+
+[node name="TownEdgeMarker" type="ColorRect" parent="." unique_id=1171067305]
+offset_left = 1868.0
+offset_top = 700.0
+offset_right = 1872.0
+offset_bottom = 880.0
+color = Color(1, 0.85, 0.4, 0.3)
 
 [node name="Player" parent="." unique_id=948302446 instance=ExtResource("2_player")]
 position = Vector2(400, 850)

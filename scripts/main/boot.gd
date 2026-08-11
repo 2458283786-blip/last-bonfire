@@ -12,10 +12,10 @@ func _ready() -> void:
 
 func _on_continue_pressed() -> void:
 	GameManager.pending_load = true
-	GameManager.change_scene("res://scenes/town/town.tscn")
+	GameManager.change_scene(SceneRegistry.TOWN)
 
 func _on_new_game_pressed() -> void:
-	GameManager.change_scene("res://scenes/town/town.tscn")
+	GameManager.change_scene(SceneRegistry.TOWN)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_accept"):

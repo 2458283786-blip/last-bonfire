@@ -1,0 +1,95 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/dungeon/door_choice.gd" id="1_dc"]
+
+[node name="DoorChoice" type="CanvasLayer"]
+script = ExtResource("1_dc")
+
+[node name="Background" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.05, 0.06, 0.08, 1)
+
+[node name="UI" type="Control" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TimeLabel" type="Label" parent="UI"]
+offset_left = 30.0
+offset_top = 24.0
+offset_right = 500.0
+offset_bottom = 64.0
+theme_override_colors/font_color = Color(1, 0.85, 0.4, 1)
+theme_override_font_sizes/font_size = 26
+text = "距天黑 0 秒"
+
+[node name="StageLabel" type="Label" parent="UI"]
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 120.0
+offset_bottom = 170.0
+theme_override_colors/font_color = Color(0.9, 0.9, 0.95, 1)
+theme_override_font_sizes/font_size = 30
+text = "选择下一房间"
+horizontal_alignment = 1
+
+[node name="Buttons" type="HBoxContainer" parent="UI"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -330.0
+offset_top = -90.0
+offset_right = 330.0
+offset_bottom = 90.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 80
+
+[node name="LeftButton" type="Button" parent="UI/Buttons"]
+custom_minimum_size = Vector2(240, 150)
+layout_mode = 2
+text = "左门"
+
+[node name="RightButton" type="Button" parent="UI/Buttons"]
+custom_minimum_size = Vector2(240, 150)
+layout_mode = 2
+text = "右门"
+
+[node name="HintLabel" type="Label" parent="UI"]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -400.0
+offset_top = -140.0
+offset_right = 400.0
+offset_bottom = -100.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.75, 0.75, 0.8, 1)
+theme_override_font_sizes/font_size = 18
+text = "选择一扇门进入下一个房间"
+horizontal_alignment = 1
+
+[node name="AbandonButton" type="Button" parent="UI"]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -260.0
+offset_top = -70.0
+offset_right = -30.0
+offset_bottom = -30.0
+grow_horizontal = 0
+grow_vertical = 0
+text = "返回城镇（放弃本局）"

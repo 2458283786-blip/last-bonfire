@@ -10,6 +10,7 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/villager_panel.tscn" id="8_vpanel"]
 [ext_resource type="PackedScene" path="res://scenes/ui/pause_menu.tscn" id="9_pause"]
 [ext_resource type="PackedScene" path="res://scenes/ui/backpack_panel.tscn" id="10_pack"]
+[ext_resource type="PackedScene" path="res://scenes/ui/shop_panel.tscn" id="11_shop"]
 
 [node name="HUD" type="CanvasLayer"]
 process_mode = 3
@@ -18,7 +19,6 @@ script = ExtResource("1_hud")
 [node name="TopBar" parent="." instance=ExtResource("2_top")]
 
 [node name="BuildMenu" parent="." instance=ExtResource("3_build")]
-entry_paths = Array[String](["res://resources/data/buildings/storage.tres", "res://resources/data/buildings/woodcutter_hut.tres", "res://resources/data/buildings/lumber_camp.tres", "res://resources/data/buildings/miner_hut.tres", "res://resources/data/buildings/quarry.tres"])
 
 [node name="BuildingPanel" parent="." instance=ExtResource("4_bpanel")]
 
@@ -33,6 +33,8 @@ entry_paths = Array[String](["res://resources/data/buildings/storage.tres", "res
 [node name="PauseMenu" parent="." instance=ExtResource("9_pause")]
 
 [node name="BackpackPanel" parent="." instance=ExtResource("10_pack")]
+
+[node name="ShopPanel" parent="." instance=ExtResource("11_shop")]
 
 [node name="PlacementHint" type="Label" parent="."]
 visible = false

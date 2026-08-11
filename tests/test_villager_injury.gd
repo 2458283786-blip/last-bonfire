@@ -19,12 +19,16 @@ func _on_timeout() -> void:
 func _run() -> void:
 	await get_tree().process_frame
 	_add_floor(Vector2(500, 420))
+	var house: HousingBuilding = (load("res://scenes/buildings/house.tscn") as PackedScene).instantiate()
+	house.position = Vector2(300, 375)
+	add_child(house)
 	var hut: WoodcutterHut = (load("res://scenes/buildings/woodcutter_hut.tscn") as PackedScene).instantiate()
 	hut.job_slots = 1
 	add_child(hut)
 	var v: Villager = (load("res://scenes/villagers/villager.tscn") as PackedScene).instantiate()
 	add_child(v)
 	v.global_position = Vector2(400, 375)
+	house.assign_villager(v)
 	hut.assign_villager(v)
 	check(v.job == "woodcutter", "初始应为伐木工")
 	v.take_damage(5.0)
@@ -39,7 +43,9 @@ func _run() -> void:
 	check(v.hp == 0.0, "受伤期间不应再扣血")
 	DayManager.advance_day()
 	DayManager.advance_day()
-	check(not v.is_injured, "两天后应恢复")
+	check(v.is_injured, "两天后应仍处于受伤状态")
+	DayManager.advance_day()
+	check(not v.is_injured, "三天后应恢复")
 	check(v.hp == v.max_hp, "恢复后血量应回满")
 	for i in 30:
 		await get_tree().physics_frame

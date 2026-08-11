@@ -47,8 +47,16 @@ var _attack_hits_applied := false
 
 func _ready() -> void:
 	add_to_group("players")
+	collision_layer = PhysicsLayers.PLAYER
+	collision_mask = PhysicsLayers.MASK_WORLD_ENEMY
+	attack_hitbox.collision_mask = PhysicsLayers.MASK_WORLD_ENEMY
+	var cfg := load("res://resources/data/game_config.tres") as GameConfig
+	if cfg != null:
+		gravity = cfg.gravity
 	hp = max_hp
 	pickup_area.area_entered.connect(_on_pickup_area_entered)
+	InventoryManager.inventory_changed.connect(_refresh_equipment_visual)
+	_refresh_equipment_visual()
 	sprite.sprite_frames = PlayerAnimations.build_sprite_frames()
 	sprite.play("idle")
 
@@ -84,15 +92,30 @@ func _physics_process(delta: float) -> void:
 func take_damage(amount: float) -> void:
 	if is_dead or invincible_timer > 0.0:
 		return
-	hp -= amount
+	hp -= maxf(amount - InventoryManager.defense_bonus(), 0.0)
 	invincible_timer = invincible_time
 	if hp <= 0.0:
 		_die()
+
+## 治疗（药水等消耗品）。
+func heal(amount: float) -> void:
+	hp = minf(hp + amount, max_hp)
+
+## 实际近战攻击力 = 基础 + 装备加成。
+func effective_attack_damage() -> int:
+	return attack_damage + InventoryManager.melee_bonus()
 
 func _die() -> void:
 	is_dead = true
 	hp = max_hp
 	invincible_timer = invincible_time
+	EventBus.player_died.emit()
+	if DungeonManager.in_dungeon:
+		# 地下城死亡：结算持久成果（已救居民/解锁）并回城镇（无彻底失败）。
+		DungeonManager.finish_run_to_town()
+		GameManager.change_scene(DungeonManager.TOWN_SCENE)
+		is_dead = false
+		return
 	var bonfire := _nearest_bonfire()
 	if bonfire != null:
 		global_position = bonfire.global_position
@@ -101,7 +124,6 @@ func _die() -> void:
 		if stockpile != null:
 			global_position = (stockpile as Node2D).global_position
 	is_dead = false
-	EventBus.player_died.emit()
 
 ## 找最近的未摧毁篝火（篝火在 core_buildings 组，不在 bonfires 组）。
 func _nearest_bonfire() -> Bonfire:
@@ -155,7 +177,7 @@ func _apply_attack_hits() -> bool:
 	var hit_any := false
 	for body in attack_hitbox.get_overlapping_bodies():
 		if body is Enemy:
-			body.take_damage(attack_damage)
+			body.take_damage(effective_attack_damage())
 			hit_any = true
 	return hit_any
 
@@ -177,7 +199,14 @@ func try_shoot_bow() -> void:
 	arrow.add_to_group("arrows")
 	get_parent().add_child(arrow)
 	arrow.global_position = bow_spawn.global_position
+	arrow.arrow_damage = attack_damage + InventoryManager.ranged_bonus()
 	arrow.setup(Vector2(facing, 0), arrow_speed)
+
+## 换装外观联动（最简版）：护甲改变角色配色，验证"装备→外观"管线。
+func _refresh_equipment_visual() -> void:
+	var armor_id := InventoryManager.equipped("armor")
+	var data := InventoryManager.get_item(armor_id)
+	sprite.modulate = data.icon_color if data != null else Color.WHITE
 
 func _update_visual() -> void:
 	sprite.flip_h = facing < 0

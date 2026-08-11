@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/economy/item_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "health_potion"
+display_name = "治疗药水"
+description = "立即恢复 30 点生命。"
+item_type = "consumable"
+heal_amount = 30
+price = 10
+icon_color = Color(0.85, 0.25, 0.25, 1)

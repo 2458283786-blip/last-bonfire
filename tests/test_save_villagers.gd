@@ -22,6 +22,8 @@ func _run() -> void:
 	await get_tree().process_frame
 	var hut: WoodcutterHut = load("res://scenes/buildings/woodcutter_hut.tscn").instantiate()
 	add_child(hut)
+	var house: HousingBuilding = load("res://scenes/buildings/house.tscn").instantiate()
+	add_child(house)
 	var v: Villager = load("res://scenes/villagers/villager.tscn").instantiate()
 	v.display_name = "阿强"
 	add_child(v)
@@ -32,6 +34,7 @@ func _run() -> void:
 	v.hp = 10.0
 	v.is_injured = true
 	v.injured_remaining_days = 2
+	house.assign_villager(v)
 	v.set_job("woodcutter")
 	await get_tree().process_frame
 	check(SaveManager.save_game(), "居民状态应可保存")

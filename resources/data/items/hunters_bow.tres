@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/economy/item_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "hunters_bow"
+display_name = "猎弓"
+description = "远程攻击 +1。"
+item_type = "weapon"
+slot = "ranged"
+damage_bonus = 1
+price = 25
+icon_color = Color(0.5, 0.35, 0.15, 1)

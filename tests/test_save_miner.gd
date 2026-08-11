@@ -22,12 +22,15 @@ func _run() -> void:
 	await get_tree().process_frame
 	var hut: MinerHut = load("res://scenes/buildings/miner_hut.tscn").instantiate()
 	add_child(hut)
+	var house: HousingBuilding = load("res://scenes/buildings/house.tscn").instantiate()
+	add_child(house)
 	var v: Villager = load("res://scenes/villagers/villager.tscn").instantiate()
 	v.display_name = "石头仔"
 	add_child(v)
 	v.set_physics_process(false)
 	v.global_position = Vector2(520, 840)
 	v.home_position = Vector2(520, 840)
+	house.assign_villager(v)
 	v.set_job("miner")
 	await get_tree().process_frame
 	check(SaveManager.save_game(), "矿工状态应可保存")

@@ -5,12 +5,13 @@ signal close_requested
 
 const STATE_NAMES := {
 	0: "空闲", 1: "找活", 2: "去工作", 3: "工作中", 4: "搬运",
-	5: "运回仓库", 6: "入库", 7: "漫游",
+	5: "运回仓库", 6: "入库", 7: "漫游", 8: "回家", 9: "逃跑",
 }
 
 @onready var villager_list: VBoxContainer = $HBox/Left/VillagerList
 @onready var job_options: VBoxContainer = $HBox/Right/JobOptions
 @onready var hint_label: Label = $HBox/Right/HintLabel
+@onready var recruit_button: Button = $HBox/Right/RecruitButton
 @onready var close_button: Button = $HBox/Right/CloseButton
 
 var _selected: Villager = null
@@ -20,6 +21,9 @@ func _ready() -> void:
 	TownRegistry.villager_registered.connect(func(_v: Villager) -> void: refresh())
 	TownRegistry.villager_unregistered.connect(func(_v: Villager) -> void: refresh())
 	TownRegistry.daily_adjustments_reset.connect(func() -> void: refresh())
+	EconomyManager.stock_changed.connect(func(_a = null, _b = null) -> void: refresh())
+	DayManager.day_changed.connect(func(_day: int) -> void: refresh())
+	recruit_button.pressed.connect(_on_recruit_pressed)
 
 func open_panel() -> void:
 	visible = true
@@ -39,6 +43,16 @@ func refresh() -> void:
 		_rebuild_job_options(null)
 	else:
 		_rebuild_job_options(_selected)
+	_refresh_recruit_button()
+
+func _refresh_recruit_button() -> void:
+	recruit_button.visible = DebugManager.instant_recruit
+	recruit_button.disabled = not TownRegistry.can_recruit()
+	recruit_button.text = "招募居民（%d 金，%d 天冷却）" % [TownRegistry.recruit_cost(), TownRegistry.recruit_cooldown_days()]
+
+func _on_recruit_pressed() -> void:
+	if TownRegistry.recruit_villager():
+		refresh()
 
 func _status_text(v: Villager) -> String:
 	if v.is_injured:
@@ -64,7 +78,7 @@ func _rebuild_job_options(v: Villager) -> void:
 		if not hut.has_method("can_accept_villager"):
 			continue
 		var btn := Button.new()
-		btn.text = "%s（剩余 %d）" % [hut.display_name, hut.job_slots - hut.assigned.size()]
+		btn.text = "%s（剩余 %d）" % [hut.display_name, hut.effective_slots() - hut.assigned.size()]
 		btn.disabled = not hut.can_accept_villager(v)
 		btn.pressed.connect(_on_job_hut_pressed.bind(hut))
 		job_options.add_child(btn)
@@ -81,6 +95,8 @@ func _on_idle_pressed(v: Villager) -> void:
 
 func try_assign_to_hut(v: Villager, hut: Node) -> bool:
 	if v == null or hut == null or TownRegistry.adjusted_today(v.villager_id):
+		return false
+	if not v.has_home():
 		return false
 	if not hut.has_method("can_accept_villager") or not hut.can_accept_villager(v):
 		return false
@@ -100,8 +116,4 @@ func try_assign_idle(v: Villager) -> bool:
 	return true
 
 func _release_from_huts(v: Villager) -> void:
-	for hut in TownRegistry.get_job_huts():
-		if hut.has_method("release_villager") and hut.get("assigned") != null:
-			var assigned: Array = hut.assigned
-			if assigned.has(v):
-				hut.release_villager(v)
+	v.release_from_job()

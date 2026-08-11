@@ -6,3 +6,14 @@ extends Resource
 @export var starting_stock: Dictionary = {"wood": 10, "stone": 5}
 ## 初始库存容量（未建仓库时）
 @export var default_capacity: int = 20
+
+## 招募居民（测试期方案）：金币消耗、冷却天数、人口上限
+@export var recruit_cost: int = 100
+@export var recruit_cooldown_days: int = 2
+@export var max_villagers: int = 8
+
+## 物理与角色基础数值（默认值与当前脚本一致，避免手感漂移）
+@export var gravity: float = 1200.0
+@export var enemy_gravity: float = 1200.0
+@export var villager_flee_speed_mult: float = 1.2
+@export var villager_injured_speed_mult: float = 0.5

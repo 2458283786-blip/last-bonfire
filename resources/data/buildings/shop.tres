@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="BuildingData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/building/building_data.gd" id="1_data"]
+[ext_resource type="PackedScene" path="res://scenes/buildings/shop.tscn" id="2_scene"]
+
+[resource]
+script = ExtResource("1_data")
+id = "shop"
+display_name = "商店"
+description = "功能型建筑：出售武器/护甲/消耗品（金币出口）。蓝图需 NPC 解救解锁（调试期可强制解锁）。"
+cost = {"wood": 30, "stone": 15}
+icon_color = Color(0.95, 0.75, 0.2, 1)
+scene = ExtResource("2_scene")
+footprint_half_width = 48.0
+build_menu_order = 9
+requires_unlock = true

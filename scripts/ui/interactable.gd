@@ -4,6 +4,9 @@ extends Node2D
 
 @export var prompt: String = "按 E 交互"
 @export var interact_radius: float = 80.0
+## 是否由自身处理交互结果（如进入地下城/离开房间/解救），HUD 不再弹通用 toast。
+## 这类交互可能触发场景切换，继续用 HUD 节点会访问已释放对象。
+var self_handled := false
 
 signal interacted
 

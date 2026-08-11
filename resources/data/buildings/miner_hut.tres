@@ -12,5 +12,6 @@ cost = {"wood": 15}
 icon_color = Color(0.45, 0.45, 0.5, 1)
 scene = ExtResource("2_scene")
 footprint_half_width = 48.0
+build_menu_order = 4
 upgrade_cost = {"wood": 20}
 upgrade_effect = "矿工名额 +1"

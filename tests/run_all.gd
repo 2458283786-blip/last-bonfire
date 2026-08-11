@@ -62,6 +62,32 @@ const TEST_SCRIPTS := [
 	"res://tests/test_save_villagers.gd",
 	"res://tests/test_save_miner.gd",
 	"res://tests/test_save_flow.gd",
+	"res://tests/test_building_upgrade.gd",
+	"res://tests/test_housing.gd",
+	"res://tests/test_threat_retreat.gd",
+	"res://tests/test_villager_speed_variance.gd",
+	"res://tests/test_debug_manager.gd",
+	"res://tests/test_defense.gd",
+	"res://tests/test_inventory.gd",
+	"res://tests/test_shop.gd",
+	"res://tests/test_recruit.gd",
+	"res://tests/test_dungeon_time.gd",
+	"res://tests/test_wave_formula.gd",
+	"res://tests/test_save_progress.gd",
+	"res://tests/test_wave_spawn_position.gd",
+	"res://tests/test_resource_database.gd",
+	"res://tests/test_physics_layers.gd",
+	"res://tests/test_scene_paths.gd",
+	"res://tests/test_job_registry.gd",
+	"res://tests/test_enemy_targets.gd",
+	"res://tests/test_save_migration.gd",
+	"res://tests/test_save_roundtrip.gd",
+	"res://tests/test_game_config.gd",
+	"res://tests/test_dungeon_map.gd",
+	"res://tests/test_dungeon_rooms.gd",
+	"res://tests/test_dungeon_flow.gd",
+	"res://tests/test_unlocks.gd",
+	"res://tests/test_save_dungeon.gd",
 ]
 const INPUT_ACTIONS := ["move_left", "move_right", "jump", "attack", "bow"]
 
@@ -95,6 +121,10 @@ func _run_all() -> void:
 		if not ok:
 			code = 1
 		test.queue_free()
+		# 清理本测试遗留到当前场景的节点（存档恢复/招募等直接挂 current_scene 的），避免跨测试污染。
+		for leftover in get_children():
+			if leftover != test:
+				leftover.queue_free()
 		await get_tree().process_frame
 	if code == 0:
 		print("[PASS] 全部测试通过")

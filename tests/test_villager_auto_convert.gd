@@ -19,6 +19,9 @@ func _on_timeout() -> void:
 func _run() -> void:
 	await get_tree().process_frame
 	_add_floor(Vector2(500, 420))
+	var house: HousingBuilding = (load("res://scenes/buildings/house.tscn") as PackedScene).instantiate()
+	house.position = Vector2(500, 380)
+	add_child(house)
 	var hut: WoodcutterHut = (load("res://scenes/buildings/woodcutter_hut.tscn") as PackedScene).instantiate()
 	hut.position = Vector2(600, 380)
 	add_child(hut)

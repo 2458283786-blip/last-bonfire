@@ -4,6 +4,7 @@ extends Node2D
 
 signal damaged(building: Building, hp: int)
 signal destroyed(building: Building)
+signal upgraded(building: Building, level: int)
 
 ## 建筑最大生命值
 @export var max_hp: int = 100
@@ -25,6 +26,41 @@ func _ready() -> void:
 func _on_destroyed(_building: Building) -> void:
 	EventBus.building_destroyed.emit(building_id)
 	_on_function_offline()
+
+## 从建筑数据库查询本建筑配置（升级造价/解锁条件等）。
+func get_data() -> BuildingData:
+	return BuildingDatabase.get_data(building_id)
+
+## 是否满足升级条件（未摧毁 / 有升级配置 / 未满级）。
+func can_upgrade() -> bool:
+	if is_destroyed:
+		return false
+	var data := get_data()
+	if data == null or data.upgrade_cost.is_empty():
+		return false
+	return level < data.max_level
+
+## 升级：校验资源 → 扣费 → 等级 +1 → 应用效果。失败返回 false 且不扣费。
+func upgrade() -> bool:
+	if not can_upgrade():
+		return false
+	var data := get_data()
+	if data == null:
+		return false
+	for id in data.upgrade_cost:
+		if EconomyManager.get_amount(id) < int(data.upgrade_cost[id]):
+			return false
+	for id in data.upgrade_cost:
+		EconomyManager.withdraw(id, int(data.upgrade_cost[id]))
+	level += 1
+	_apply_level_effects()
+	upgraded.emit(self, level)
+	EventBus.building_upgraded.emit(building_id, level)
+	return true
+
+## 升级效果钩子（子类实现；基类空实现）。
+func _apply_level_effects() -> void:
+	pass
 
 func take_damage(amount: int) -> void:
 	if is_destroyed:

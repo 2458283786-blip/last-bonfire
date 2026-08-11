@@ -21,8 +21,12 @@ func _run() -> void:
 	var hut: MinerHut = MinerHut.new()
 	hut.job_slots = 1
 	add_child(hut)
+	var house: HousingBuilding = (load("res://scenes/buildings/house.tscn") as PackedScene).instantiate()
+	house.position = Vector2(300, 0)
+	add_child(house)
 	var v: Villager = (load("res://scenes/villagers/villager.tscn") as PackedScene).instantiate()
 	add_child(v)
+	house.assign_villager(v)
 	hut.assign_villager(v)
 	check(v.job == "miner", "转职后居民应为矿工")
 	check(not hut.can_accept_villager(v), "名额满后不能再接收")
@@ -30,6 +34,7 @@ func _run() -> void:
 	check(hut.can_accept_villager(v), "释放后应能再次接收")
 	var v2: Villager = (load("res://scenes/villagers/villager.tscn") as PackedScene).instantiate()
 	add_child(v2)
+	house.assign_villager(v2)
 	for i in 120:
 		await get_tree().physics_frame
 		if v2.job == "miner":

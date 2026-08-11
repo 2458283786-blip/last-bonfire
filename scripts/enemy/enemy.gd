@@ -5,6 +5,10 @@ extends CharacterBody2D
 
 enum AIState { IDLE, CHASE, ATTACK, DIE }
 
+## 支持的目标类型（EnemyData.attack_priority 可用值）。
+## 新增目标类型时：在此登记 + 在 _nearest_in_type 加映射；测试会校验配置不越界。
+const SUPPORTED_TARGET_TYPES := ["villager", "building", "player"]
+
 ## 敌人配置（enemy_*.tres）
 @export var data: EnemyData
 ## 死亡后生成掉落物的场景
@@ -16,9 +20,19 @@ var target: Node2D = null
 var attack_timer := 0.0
 var _last_position := Vector2.ZERO
 var _stuck_frames := 0
+## 出生后朝城镇推进的目标点（夜袭用）；未设置则原地待机直到发现目标。
+## 数据由波次生成器注入（march_point），地下城怪物不设置 → 保持站桩。
+var march_target := Vector2.INF
+## 重力（默认值，可由 game_config 覆盖）
+var gravity := 1200.0
 
 func _ready() -> void:
 	add_to_group("enemies")
+	collision_layer = PhysicsLayers.ENEMY
+	collision_mask = PhysicsLayers.MASK_WORLD_PLAYER
+	var cfg := load("res://resources/data/game_config.tres") as GameConfig
+	if cfg != null:
+		gravity = cfg.enemy_gravity
 	current_hp = data.max_hp
 	_last_position = global_position
 
@@ -52,21 +66,26 @@ func _physics_process(delta: float) -> void:
 	if ai_state == AIState.DIE:
 		return
 	if not is_on_floor():
-		velocity.y += 1200.0 * delta
+		velocity.y += gravity * delta
 	velocity.x = 0.0
 	match ai_state:
 		AIState.IDLE:
-			_idle()
+			_idle(delta)
 		AIState.CHASE:
 			_chase(delta)
 		AIState.ATTACK:
 			_attack(delta)
 	move_and_slide()
 
-func _idle() -> void:
+func _idle(delta: float) -> void:
 	target = _find_target()
 	if target != null:
 		ai_state = AIState.CHASE
+		return
+	# 夜袭行军：朝城镇推进，直到进入感知范围发现目标。
+	if march_target != Vector2.INF:
+		if _move_toward(march_target, delta):
+			velocity.x = 0.0
 
 func _find_target() -> Node2D:
 	for target_type in data.attack_priority:

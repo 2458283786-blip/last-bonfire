@@ -41,5 +41,10 @@ autowrap_mode = 2
 [node name="JobOptions" type="VBoxContainer" parent="HBox/Right"]
 layout_mode = 2
 
+[node name="RecruitButton" type="Button" parent="HBox/Right"]
+visible = false
+layout_mode = 2
+text = "招募居民"
+
 [node name="CloseButton" type="Button" parent="HBox/Right"]
 text = "关闭"

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/economy/item_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "leather_armor"
+display_name = "皮甲"
+description = "防御 +1（降低受到的伤害）。"
+item_type = "armor"
+slot = "armor"
+defense_bonus = 1
+price = 30
+icon_color = Color(0.55, 0.4, 0.25, 1)

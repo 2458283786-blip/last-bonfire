@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/enemy/enemy_data.gd" id="1_data"]
+
+[resource]
+script = ExtResource("1_data")
+id = "boss_wolf"
+display_name = "狼王"
+max_hp = 10
+move_speed = 130.0
+damage = 2
+attack_interval = 1.0
+attack_range = 32.0
+aggro_range = 700.0
+attack_priority = Array[String](["player", "building", "villager"])
+enemy_type = "melee"
+collision_radius = 14.0
+loot_table = [{
+"chance": 1.0,
+"max": 5,
+"min": 3,
+"resource_id": "gold"
+}, {
+"chance": 0.8,
+"max": 3,
+"min": 2,
+"resource_id": "monster_material"
+}]

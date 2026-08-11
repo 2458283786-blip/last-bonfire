@@ -12,5 +12,6 @@ cost = {"wood": 25}
 icon_color = Color(0.38, 0.38, 0.42, 1)
 scene = ExtResource("2_scene")
 footprint_half_width = 48.0
-upgrade_cost = {"wood": 30}
+build_menu_order = 5
+upgrade_cost = {"wood": 30, "monster_material": 2}
 upgrade_effect = "城内石头 +3"

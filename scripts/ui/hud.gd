@@ -10,6 +10,7 @@ extends CanvasLayer
 @onready var villager_panel: PanelContainer = $VillagerPanel
 @onready var pause_menu: PanelContainer = $PauseMenu
 @onready var backpack_panel: PanelContainer = $BackpackPanel
+@onready var shop_panel: PanelContainer = $ShopPanel
 @onready var placement_hint: Label = $PlacementHint
 
 var _selector: BuildingSelector = null
@@ -19,23 +20,31 @@ func _ready() -> void:
 	top_bar.open_villager_panel.connect(_toggle_villager_panel)
 	build_menu.building_selected.connect(_on_building_selected)
 	building_panel.close_requested.connect(func() -> void: building_panel.visible = false)
+	building_panel.shop_requested.connect(_on_shop_requested)
+	shop_panel.close_requested.connect(func() -> void: shop_panel.visible = false)
 	villager_panel.close_requested.connect(func() -> void: villager_panel.visible = false)
 	pause_menu.resume_requested.connect(_toggle_pause)
 	pause_menu.settings_requested.connect(func() -> void: toast_queue.push("设置功能开发中"))
 	pause_menu.save_requested.connect(_on_save_requested)
 	pause_menu.load_requested.connect(_on_load_requested)
-	pause_menu.exit_requested.connect(func() -> void: GameManager.change_scene("res://scenes/main/boot.tscn"))
+	pause_menu.exit_requested.connect(func() -> void: GameManager.change_scene(SceneRegistry.BOOT))
 	top_bar.open_backpack.connect(_toggle_backpack)
 	call_deferred("_spawn_selector")
 	EventBus.villager_injured.connect(func(id: String) -> void: toast_queue.push("居民受伤了（ID %s），将休养数日" % id))
 	EventBus.building_destroyed.connect(func(id: String) -> void: toast_queue.push("建筑被摧毁：" + id))
 	EventBus.building_repaired.connect(func(id: String) -> void: toast_queue.push("建筑已修复/重建：" + id))
+	EventBus.building_upgraded.connect(func(id: String, level: int) -> void:
+		var d := BuildingDatabase.get_data(id)
+		toast_queue.push("%s 升级到 %d 级" % [d.display_name if d != null else id, level]))
 	EventBus.building_built.connect(func(id: String) -> void: toast_queue.push("建筑建成：" + id))
 	EventBus.bonfire_lost.connect(func() -> void: toast_queue.push("篝火熄灭了！尽快重建！"))
 	EventBus.bonfire_restored.connect(func() -> void: toast_queue.push("篝火重燃！"))
 	EventBus.pickup_collected.connect(func(resource_id: String, amount: int) -> void: toast_queue.push("%s +%d" % [resource_name(resource_id), amount]))
 	EventBus.wave_spawned.connect(func(count: int) -> void: toast_queue.push("夜晚波次来袭（%d 只怪物）" % count))
 	EventBus.villager_converted.connect(func(display_name: String, job: String) -> void: toast_queue.push("%s 成为%s" % [display_name, TownRegistry.job_display_name(job)]))
+	EventBus.blueprint_unlocked.connect(func(building_id: String) -> void:
+		var data := BuildingDatabase.get_data(building_id)
+		toast_queue.push("%s 加入了城镇，%s 蓝图已解锁！" % ["商人", data.display_name if data != null else building_id]))
 
 func _spawn_selector() -> void:
 	if _selector != null:
@@ -89,7 +98,7 @@ func _on_save_requested() -> void:
 
 func _on_load_requested() -> void:
 	GameManager.pending_load = true
-	GameManager.change_scene("res://scenes/town/town.tscn")
+	GameManager.change_scene(SceneRegistry.TOWN)
 
 func _on_building_selected(data: BuildingData) -> void:
 	build_menu.visible = false
@@ -116,13 +125,12 @@ func _on_placement_canceled(controller: PlacementController) -> void:
 func _on_building_clicked(b: Building) -> void:
 	building_panel.show_building(b)
 
+func _on_shop_requested(shop: Node) -> void:
+	building_panel.visible = false
+	shop_panel.open_shop(shop)
+
 func resource_name(id: String) -> String:
-	match id:
-		"wood": return "木头"
-		"stone": return "石头"
-		"gold": return "金币"
-		"monster_material": return "怪物材料"
-	return id
+	return ResourceDatabase.display_name(id)
 
 func _try_interact() -> void:
 	var player := _get_player()
@@ -131,7 +139,8 @@ func _try_interact() -> void:
 	for node in get_tree().get_nodes_in_group("interactables"):
 		var ia := node as Interactable
 		if ia != null and ia.try_interact(player.global_position):
-			toast_queue.push(ia.prompt)
+			if not ia.self_handled and is_instance_valid(toast_queue):
+				toast_queue.push(ia.prompt)
 			return
 
 func _get_player() -> Node2D:

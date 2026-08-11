@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="ResourceDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/economy/resource_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "wood"
+display_name = "木头"
+short_name = "木"
+icon_color = Color(0.55, 0.4, 0.2, 1)

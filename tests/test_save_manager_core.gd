@@ -25,7 +25,7 @@ func _run() -> void:
 	var parsed = JSON.parse_string(f.get_as_text())
 	f.close()
 	check(typeof(parsed) == TYPE_DICTIONARY, "存档应为 JSON 字典")
-	check(int(parsed.get("version", -1)) == 1, "存档版本应为 1")
+	check(int(parsed.get("version", -1)) == SaveManager.SAVE_VERSION, "存档版本应为当前版本")
 	var w := FileAccess.open(SaveManager.save_path, FileAccess.WRITE)
 	w.store_string("{broken")
 	w.close()

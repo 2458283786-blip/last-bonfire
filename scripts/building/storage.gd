@@ -6,24 +6,35 @@ extends Building
 ## 建仓库后库存容量增加多少
 @export var capacity_boost: int = 80
 
-var _capacity_active := false
+## 当前已计入 EconomyManager 的容量贡献（差值法保证幂等）
+var _capacity_contribution := 0
 
 func _ready() -> void:
 	super._ready()
 	add_to_group("storage_buildings")
-	_capacity_active = true
-	EconomyManager.set_capacity(EconomyManager.capacity + capacity_boost)
+	_capacity_contribution = 0
+	_apply_capacity()
 
 func _exit_tree() -> void:
-	if _capacity_active:
-		EconomyManager.set_capacity(maxi(EconomyManager.capacity - capacity_boost, 0))
+	if _capacity_contribution != 0:
+		EconomyManager.set_capacity(maxi(EconomyManager.capacity - _capacity_contribution, 0))
+		_capacity_contribution = 0
+
+## 按当前等级把容量贡献同步到 EconomyManager（差值法，幂等）。
+func _apply_capacity() -> void:
+	var target := capacity_boost * level
+	if target == _capacity_contribution:
+		return
+	EconomyManager.set_capacity(EconomyManager.capacity - _capacity_contribution + target)
+	_capacity_contribution = target
 
 func _on_function_offline() -> void:
-	if _capacity_active:
-		_capacity_active = false
-		EconomyManager.set_capacity(maxi(EconomyManager.capacity - capacity_boost, 0))
+	if _capacity_contribution != 0:
+		EconomyManager.set_capacity(maxi(EconomyManager.capacity - _capacity_contribution, 0))
+		_capacity_contribution = 0
 
 func _on_function_online() -> void:
-	if not _capacity_active:
-		_capacity_active = true
-		EconomyManager.set_capacity(EconomyManager.capacity + capacity_boost)
+	_apply_capacity()
+
+func _apply_level_effects() -> void:
+	_apply_capacity()

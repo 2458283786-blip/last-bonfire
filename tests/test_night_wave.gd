@@ -25,6 +25,7 @@ func _run() -> void:
 	spawner.wave_growth = 1
 	spawner.max_wave_size = 10
 	spawner.spawn_offsets = [Vector2(-100, 0), Vector2(100, 0)]
+	spawner.random_variance = 0.0
 	add_child(spawner)
 	spawner.global_position = Vector2(500, 375)
 	DayManager.advance_phase()

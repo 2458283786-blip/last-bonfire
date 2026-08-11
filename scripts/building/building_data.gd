@@ -17,3 +17,9 @@ extends Resource
 @export var upgrade_cost: Dictionary = {}
 ## 升级效果描述（预留）
 @export var upgrade_effect: String = ""
+## 最高等级（升级链上限）
+@export var max_level: int = 3
+## 需要解锁才能建造（商店等 NPC 建筑用；DebugManager.unlock_all_blueprints 可强制解锁）
+@export var requires_unlock: bool = false
+## 建造菜单排序（BuildMenu 从数据库构建时按此升序排列）
+@export var build_menu_order: int = 999

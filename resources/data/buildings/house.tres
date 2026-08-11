@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="BuildingData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/building/building_data.gd" id="1_data"]
+[ext_resource type="PackedScene" path="res://scenes/buildings/house.tscn" id="2_scene"]
+
+[resource]
+script = ExtResource("1_data")
+id = "house"
+display_name = "住宅"
+description = "提供 2 个住宅容量；没房子不能工作。夜晚居民回家并亮灯。"
+cost = {"wood": 10, "stone": 3}
+icon_color = Color(0.55, 0.4, 0.7, 1)
+scene = ExtResource("2_scene")
+footprint_half_width = 48.0
+build_menu_order = 6
+upgrade_cost = {"wood": 15, "stone": 5}
+upgrade_effect = "住宅容量 +2"

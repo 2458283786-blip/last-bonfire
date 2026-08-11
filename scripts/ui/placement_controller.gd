@@ -86,11 +86,12 @@ func _confirm() -> void:
 		placement_rejected.emit(_reject_reason(pos))
 		return
 	for id in data.cost:
-		if EconomyManager.get_amount(id) < int(data.cost[id]):
+		if not DebugManager.skip_costs and EconomyManager.get_amount(id) < int(data.cost[id]):
 			placement_rejected.emit("资源不足，无法建造")
 			return
-	for id in data.cost:
-		EconomyManager.withdraw(id, int(data.cost[id]))
+	if not DebugManager.skip_costs:
+		for id in data.cost:
+			EconomyManager.withdraw(id, int(data.cost[id]))
 	var building := data.scene.instantiate()
 	get_parent().add_child(building)
 	building.global_position = pos

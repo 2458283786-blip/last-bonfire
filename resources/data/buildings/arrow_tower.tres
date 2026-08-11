@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="BuildingData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/building/building_data.gd" id="1_data"]
+[ext_resource type="PackedScene" path="res://scenes/buildings/arrow_tower.tscn" id="2_scene"]
+
+[resource]
+script = ExtResource("1_data")
+id = "arrow_tower"
+display_name = "箭塔"
+description = "把空闲居民转职为箭塔驻守，远程站桩射击（稳但伤害低）。"
+cost = {"wood": 35, "stone": 20}
+icon_color = Color(0.35, 0.42, 0.75, 1)
+scene = ExtResource("2_scene")
+footprint_half_width = 48.0
+build_menu_order = 8
+upgrade_cost = {"wood": 45, "stone": 25, "monster_material": 4}
+upgrade_effect = "驻守名额 +1"

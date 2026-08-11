@@ -9,19 +9,30 @@ extends Building
 @export var resource_count: int = 6
 ## 资源围绕建筑的分布半径
 @export var spawn_radius: float = 120.0
+## 每升一级额外生成的资源数量
+@export var resources_per_level: int = 3
 
 func _ready() -> void:
 	super._ready()
-	_spawn_resources()
+	_spawn_resources_until(effective_resource_count())
 
-func _spawn_resources() -> void:
+func effective_resource_count() -> int:
+	return resource_count + maxi(level - 1, 0) * resources_per_level
+
+## 补足式生成：把场内资源补到有效数量（幂等）。
+func _spawn_resources_until(count: int) -> void:
 	if resource_scene == null:
 		return
-	for i in resource_count:
-		var angle := TAU * i / resource_count
+	var current := _resource_children_count()
+	for i in range(current, count):
+		# 基础环在 spawn_radius，升级新增的资源放到外层环，避免与旧节点重叠。
+		var radius := spawn_radius
+		if i >= resource_count:
+			radius = spawn_radius * 1.3
+		var angle := TAU * (i % maxi(resource_count, 1)) / maxi(resource_count, 1)
 		var node: ResourceNode = resource_scene.instantiate()
 		add_child(node)
-		node.position = Vector2.from_angle(angle) * spawn_radius
+		node.position = Vector2.from_angle(angle) * radius
 
 ## 建筑被摧毁：场内资源随之下线（删除），重建后重新生成满编。
 func _on_function_offline() -> void:
@@ -30,8 +41,11 @@ func _on_function_offline() -> void:
 			child.queue_free()
 
 func _on_function_online() -> void:
-	if _resource_children_count() == 0:
-		_spawn_resources()
+	_spawn_resources_until(effective_resource_count())
+
+func _apply_level_effects() -> void:
+	if not is_destroyed:
+		_spawn_resources_until(effective_resource_count())
 
 func _resource_children_count() -> int:
 	var count := 0

@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="BuildingData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/building/building_data.gd" id="1_data"]
+[ext_resource type="PackedScene" path="res://scenes/buildings/militia_barracks.tscn" id="2_scene"]
+
+[resource]
+script = ExtResource("1_data")
+id = "militia_barracks"
+display_name = "民兵营"
+description = "把空闲居民转职为民兵，站桩近战守卫城镇（风险换伤害）。建议建在夜袭方向。"
+cost = {"wood": 30, "stone": 10}
+icon_color = Color(0.75, 0.35, 0.25, 1)
+scene = ExtResource("2_scene")
+footprint_half_width = 48.0
+build_menu_order = 7
+upgrade_cost = {"wood": 40, "stone": 15, "monster_material": 3}
+upgrade_effect = "民兵名额 +1"
