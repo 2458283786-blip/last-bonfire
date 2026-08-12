@@ -51,6 +51,8 @@ godot --headless --path . res://tests/run_all.tscn
 godot --headless --path . res://tests/run_all.tscn -- --only=test_day_manager
 ```
 
+> 新会话/新开发者请先读 [docs/DEV-HANDOFF.md](docs/DEV-HANDOFF.md)（接手指南：架构、进度、下一步、已知坑）。
+
 ## 目录结构
 
 ```
