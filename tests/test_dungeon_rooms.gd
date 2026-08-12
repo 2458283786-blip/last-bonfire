@@ -5,6 +5,7 @@ signal finished(ok: bool)
 var failures: Array[String] = []
 var assertions := 0
 var _done := false
+var _exit_used := false
 
 func _ready() -> void:
 	DayManager.reset()
@@ -33,6 +34,20 @@ func _run() -> void:
 		e.take_damage(99)
 	await get_tree().process_frame
 	check(room.is_cleared(), "清怪后战斗房应判定清场")
+	# 交互回归：房间场景需自行处理 interact 输入（E 触发出口），否则清场后无法进入下一关
+	room._process(0.016)
+	var exit_node := room.get_node("Exit")
+	check(exit_node._active, "清场后出口应激活")
+	_exit_used = false
+	exit_node.interacted.disconnect(exit_node._on_interacted)
+	exit_node.interacted.connect(func() -> void: _exit_used = true)
+	var ev := InputEventAction.new()
+	ev.action = "interact"
+	ev.pressed = true
+	room._unhandled_input(ev)
+	check(_exit_used, "按 E 应触发房间出口交互")
+	room.queue_free()
+	await get_tree().process_frame
 	# 清掉战斗房遗留的掉落物，避免污染宝箱房计数
 	for p in get_tree().get_nodes_in_group("pickups").duplicate():
 		p.queue_free()

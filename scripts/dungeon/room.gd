@@ -23,6 +23,20 @@ func _process(_delta: float) -> void:
 		return
 	_set_exit_active(true)
 
+## 房间场景独立加载，需要自行处理 interact 输入（城镇 HUD 不在场），否则清场后无法交互出口/囚笼
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("interact"):
+		_try_interact()
+
+func _try_interact() -> void:
+	var players := get_tree().get_nodes_in_group("players")
+	if players.is_empty():
+		return
+	for node in get_tree().get_nodes_in_group("interactables"):
+		var ia := node as Interactable
+		if ia != null and ia.try_interact(players[0].global_position):
+			return
+
 func _set_exit_active(active: bool) -> void:
 	if _exit_node != null and _exit_node.has_method("set_active"):
 		_exit_node.set_active(active)
