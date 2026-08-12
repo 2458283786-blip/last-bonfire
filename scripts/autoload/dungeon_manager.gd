@@ -1,6 +1,6 @@
 extends Node
-## 地下城状态管理（P11）：进入时记录"距天黑剩余时间"，探索超时强制入夜。
-## 城镇时间照常流逝（DayManager 为全局单例），玩家在关卡内只受倒计时压力。
+## 地下城状态管理（P11）：进入时记录"距天黑剩余时间"，此后每帧从 DayManager 推导，
+## 探索超时强制入夜。地下城内 DayManager 按 dungeon_time_scale 放慢，城镇节奏不受影响。
 
 signal dungeon_entered(remaining_to_night: float)
 signal dungeon_exited
@@ -26,6 +26,7 @@ var _current_node: DungeonNodeData = null
 
 func reset() -> void:
 	in_dungeon = false
+	DayManager.set_in_dungeon(false)
 	remaining_to_night = 0.0
 	night_forced = false
 	run = null
@@ -33,14 +34,16 @@ func reset() -> void:
 
 func enter_dungeon() -> void:
 	in_dungeon = true
+	DayManager.set_in_dungeon(true)
 	night_forced = false
 	remaining_to_night = _time_until_night()
 	dungeon_entered.emit(remaining_to_night)
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	if not in_dungeon:
 		return
-	remaining_to_night = maxf(remaining_to_night - delta, 0.0)
+	# 单一时间源：倒计时从 DayManager 当前阶段/剩余时间推导，避免与城镇时钟脱同步
+	remaining_to_night = _time_until_night()
 	if remaining_to_night <= 0.0 and not night_forced:
 		night_forced = true
 		_force_night()
@@ -48,6 +51,7 @@ func _process(delta: float) -> void:
 
 func exit_dungeon() -> void:
 	in_dungeon = false
+	DayManager.set_in_dungeon(false)
 	dungeon_exited.emit()
 
 ## ---- 两门二选一运行态 ----

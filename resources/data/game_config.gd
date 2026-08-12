@@ -17,3 +17,6 @@ extends Resource
 @export var enemy_gravity: float = 1200.0
 @export var villager_flee_speed_mult: float = 1.2
 @export var villager_injured_speed_mult: float = 0.5
+
+## 地下城时间流速倍率（相对城镇）：地下城内 2 秒只算城镇 1 秒，探索预算翻倍；0.5 为起点，待实测调参
+@export var dungeon_time_scale: float = 0.5

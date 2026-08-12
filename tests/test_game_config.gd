@@ -24,6 +24,7 @@ func _run() -> void:
 	check(absf(cfg.enemy_gravity - 1200.0) < 0.01, "敌人重力默认 1200")
 	check(absf(cfg.villager_flee_speed_mult - 1.2) < 0.01, "逃跑倍率默认 1.2")
 	check(absf(cfg.villager_injured_speed_mult - 0.5) < 0.01, "受伤倍率默认 0.5")
+	check(absf(cfg.dungeon_time_scale - 0.5) < 0.01, "地下城时间流速默认 0.5")
 	var v: Villager = (load("res://scenes/villagers/villager.tscn") as PackedScene).instantiate()
 	add_child(v)
 	v.set_physics_process(false)

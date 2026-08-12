@@ -4,3 +4,4 @@
 
 [resource]
 script = ExtResource("1")
+dungeon_time_scale = 0.5

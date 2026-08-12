@@ -15,12 +15,22 @@ var phase_length_seconds: float = 60.0
 var _phase_timer := 0.0
 ## 当晚波次是否已触发（防止回城/读档重复刷怪；进入新一天重置）
 var wave_triggered_tonight := false
+## 地下城时间流速倍率（相对城镇）：地下城内 2 秒只算城镇 1 秒；默认值与 game_config 一致，_ready 时由配置覆盖
+var dungeon_time_scale := 0.5
+## 玩家是否在地下城内（由 DungeonManager 进出时同步，纯运行态不存档）
+var _in_dungeon := false
+
+func _ready() -> void:
+	var cfg := load("res://resources/data/game_config.tres") as GameConfig
+	if cfg != null:
+		dungeon_time_scale = cfg.dungeon_time_scale
 
 func reset() -> void:
 	day = 1
 	phase = TimePhase.DAY
 	_phase_timer = 0.0
 	wave_triggered_tonight = false
+	_in_dungeon = false
 
 func advance_day() -> void:
 	day += 1
@@ -33,8 +43,15 @@ func advance_phase() -> void:
 		wave_triggered_tonight = false
 		advance_day()
 
+## 进出地下城时由 DungeonManager 调用，切换城镇/地下城时间流速
+func set_in_dungeon(value: bool) -> void:
+	_in_dungeon = value
+
 func _process(delta: float) -> void:
-	_phase_timer += delta
+	var effective_delta := delta
+	if _in_dungeon:
+		effective_delta *= dungeon_time_scale
+	_phase_timer += effective_delta
 	if _phase_timer >= phase_length_seconds:
 		_phase_timer = 0.0
 		advance_phase()
