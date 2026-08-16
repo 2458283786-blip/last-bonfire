@@ -26,6 +26,8 @@ var march_target := Vector2.INF
 ## 重力（默认值，可由 game_config 覆盖）
 var gravity := 1200.0
 
+@onready var visual: Sprite2D = $Visual
+
 func _ready() -> void:
 	add_to_group("enemies")
 	collision_layer = PhysicsLayers.ENEMY
@@ -76,6 +78,13 @@ func _physics_process(delta: float) -> void:
 		AIState.ATTACK:
 			_attack(delta)
 	move_and_slide()
+	_update_visual()
+
+func _update_visual() -> void:
+	if visual == null:
+		return
+	if absf(velocity.x) > 0.1:
+		visual.flip_h = velocity.x < 0
 
 func _idle(delta: float) -> void:
 	target = _find_target()

@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://scripts/enemy/enemy.gd" id="1_enemy"]
 [ext_resource type="Resource" path="res://resources/data/enemy_boss_wolf.tres" id="2_data"]
 [ext_resource type="PackedScene" path="res://scenes/resources/pickup.tscn" id="3_pickup"]
+[ext_resource type="Texture2D" path="res://assets/art/characters/monster/bigwolf.png" id="4_bigwolf"]
 
 [sub_resource type="CapsuleShape2D" id="Capsule_boss"]
 radius = 14.0
@@ -19,12 +20,11 @@ pickup_scene = ExtResource("3_pickup")
 position = Vector2(0, -4)
 shape = SubResource("Capsule_boss")
 
-[node name="Visual" type="ColorRect" parent="."]
-offset_left = -18.0
-offset_top = -28.0
-offset_right = 18.0
-offset_bottom = 16.0
-color = Color(0.45, 0.12, 0.12, 1)
+[node name="Visual" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(0, -26)
+scale = Vector2(2, 2)
+texture = ExtResource("4_bigwolf")
 
 [node name="Label" type="Label" parent="."]
 offset_left = -30.0

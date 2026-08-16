@@ -10,6 +10,11 @@ enum WorkState { IDLE, FIND_WORK, TRAVEL_TO_WORK, WORKING, PICKUP, TRAVEL_TO_STO
 const FLEE_SPEED_MULT := 1.2
 const INJURED_SPEED_MULT := 0.5
 const IDLE_EMOTES := ["Zzz", "…", "♪", "☕", "🌿"]
+## 角色外观表：character_id → {sheet 路径, idle 帧数, run 帧数}（序列帧横排）
+const CHARACTER_SHEETS := {
+	"soldier": {"sheet": "res://assets/art/characters/npc/solider-Sheet.png", "idle": 4, "run": 6},
+	"witcher": {"sheet": "res://assets/art/characters/npc/witcher-sheet.png", "idle": 3, "run": 4},
+}
 ## 重力（默认值，可由 game_config 覆盖）
 var gravity := 1200.0
 var flee_speed_mult := FLEE_SPEED_MULT
@@ -37,6 +42,8 @@ var injured_speed_mult := INJURED_SPEED_MULT
 @export var injured_days: int = 3
 ## 居民显示名（UI 列表用，可在场景中配置）
 @export var display_name: String = "居民"
+## 角色外观（soldier=士兵 / witcher=术士；空值则隐藏角色图）
+@export var character_id: String = "soldier"
 
 var villager_id := 0
 var job := "idle"
@@ -61,6 +68,7 @@ var home: Node2D = null
 var _fleeing := false
 
 @onready var emote_label: Label = $IdleEmote
+@onready var sprite: AnimatedSprite2D = $Visual
 
 func _ready() -> void:
 	villager_id = get_instance_id()
@@ -79,6 +87,7 @@ func _ready() -> void:
 	DayManager.day_changed.connect(_on_day_changed)
 	EventBus.threat_broadcast.connect(_on_threat_broadcast)
 	TownRegistry.register_villager(self)
+	_build_visual()
 
 func _exit_tree() -> void:
 	if is_instance_valid(TownRegistry):
@@ -160,6 +169,51 @@ func _physics_process(delta: float) -> void:
 		WorkState.GUARD:
 			_guard(delta)
 	move_and_slide()
+	_update_visual()
+
+## ---------- 角色视觉（序列帧动画） ----------
+
+## 按 character_id 构建 idle/run 动画（序列帧横排：前 N 帧 idle + 后 M 帧 run）。
+func _build_visual() -> void:
+	if sprite == null:
+		return
+	var cfg := CHARACTER_SHEETS.get(character_id, {}) as Dictionary
+	if cfg.is_empty():
+		sprite.visible = false
+		return
+	var sheet := load(cfg["sheet"]) as Texture2D
+	if sheet == null:
+		sprite.visible = false
+		return
+	var idle_n := int(cfg["idle"])
+	var run_n := int(cfg["run"])
+	var frame_w := sheet.get_width() / (idle_n + run_n)
+	var frames := SpriteFrames.new()
+	frames.add_animation("idle")
+	frames.add_animation("run")
+	for i in idle_n:
+		frames.add_frame("idle", _make_frame(sheet, i, frame_w), 1.0 / 6.0)
+	for i in run_n:
+		frames.add_frame("run", _make_frame(sheet, idle_n + i, frame_w), 1.0 / 12.0)
+	sprite.sprite_frames = frames
+	sprite.visible = true
+	sprite.play("idle")
+
+func _make_frame(sheet: Texture2D, index: int, frame_w: int) -> AtlasTexture:
+	var at := AtlasTexture.new()
+	at.atlas = sheet
+	at.region = Rect2(index * frame_w, 0, frame_w, sheet.get_height())
+	return at
+
+func _update_visual() -> void:
+	if sprite == null or sprite.sprite_frames == null:
+		return
+	if absf(velocity.x) > 10.0:
+		sprite.flip_h = velocity.x < 0
+		if sprite.animation != "run":
+			sprite.play("run")
+	elif sprite.animation != "idle":
+		sprite.play("idle")
 
 func _update_idle() -> void:
 	if is_injured:

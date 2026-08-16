@@ -554,6 +554,7 @@ position = Vector2(1112, 865)
 position = Vector2(277, 853)
 
 [node name="Villager2" parent="Villagers" unique_id=2073914033 instance=ExtResource("8_g3yvl")]
+character_id = "witcher"
 position = Vector2(78, 844)
 
 [node name="Villager3" parent="Villagers" unique_id=1434621787 instance=ExtResource("8_g3yvl")]

@@ -1,18 +1,18 @@
 [gd_scene load_steps=2 format=3]
 
 [ext_resource type="Script" path="res://scripts/building/woodcutter_hut.gd" id="1_hut"]
+[ext_resource type="Texture2D" path="res://assets/art/environment/伐木屋.png" id="2_tex"]
 
 [node name="WoodcutterHut" type="Node2D"]
 script = ExtResource("1_hut")
 building_id = "woodcutter_hut"
 display_name = "伐木屋"
 
-[node name="Visual" type="ColorRect" parent="."]
-offset_left = -32.0
-offset_top = -24.0
-offset_right = 32.0
-offset_bottom = 24.0
-color = Color(0.72, 0.52, 0.28, 1)
+[node name="Visual" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(0, -40)
+scale = Vector2(2, 2)
+texture = ExtResource("2_tex")
 
 [node name="Label" type="Label" parent="."]
 offset_left = -40.0

@@ -230,6 +230,7 @@ func _collect_villagers() -> Array:
 		out.append({
 			"scene_path": node.scene_file_path,
 			"display_name": v.display_name,
+			"character_id": v.character_id,
 			"job": v.job,
 			"position": [node.global_position.x, node.global_position.y],
 			"home_position": [v.home_position.x, v.home_position.y],
@@ -253,12 +254,14 @@ func _apply_villager(entry: Dictionary) -> void:
 	v.global_position = Vector2(entry["position"][0], entry["position"][1])
 	v.home_position = Vector2(entry["home_position"][0], entry["home_position"][1])
 	v.display_name = str(entry.get("display_name", "居民"))
+	v.character_id = str(entry.get("character_id", "soldier"))
 	v.carry = (entry.get("carry", {}) as Dictionary).duplicate()
 	v.hp = float(entry.get("hp", v.max_hp))
 	v.is_injured = bool(entry.get("is_injured", false))
 	v.injured_remaining_days = int(entry.get("injured_remaining_days", 0))
 	v.move_speed = float(entry.get("move_speed", v.move_speed))
 	v.set_job(str(entry.get("job", "idle")))
+	v._build_visual()
 
 ## 恢复完成后重新开启居民物理处理（修复读档后村民站立不动）。
 func _resume_villagers() -> void:
