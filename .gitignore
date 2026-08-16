@@ -1,6 +1,9 @@
 # Godot 4 自动生成的缓存与导入目录
 .godot/
 
+# Codex 开发辅助的测试日志目录（sdd）
+.superpowers/
+
 # 导出产物
 builds/
 exports/
